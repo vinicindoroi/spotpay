@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 const FALLBACK_URL =
   "https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html";
 
-function isDevHost(host: string) {
-  return (
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "0.0.0.0" ||
-    host.includes("preview") ||
-    host.includes("-dev.")
-  );
-}
+// Runs as an inline blocking script in <head>, before anything paints.
+const GUARD_SCRIPT = `(function(){
+var host=window.location.hostname;
+var isDev=host==='localhost'||host==='127.0.0.1'||host==='0.0.0.0'||host.indexOf('preview')!==-1||host.indexOf('-dev.')!==-1;
+if(isDev)return;
+var campaign=(new URLSearchParams(window.location.search).get('utm_campaign')||'').toLowerCase();
+if(campaign.indexOf('spot')!==-1)return;
+document.documentElement.style.display='none';
+window.location.replace('${FALLBACK_URL}');
+})();`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [{ children: GUARD_SCRIPT }],
   }),
   component: SpotifyPage,
 });
@@ -38,13 +40,7 @@ function SpotifyPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const current = window.location.search;
-    setSearch(current);
-    if (isDevHost(window.location.hostname)) return;
-    const campaign = (
-      new URLSearchParams(current).get("utm_campaign") || ""
-    ).toLowerCase();
-    if (!campaign.includes("spot")) window.location.replace(FALLBACK_URL);
+    setSearch(window.location.search);
   }, []);
 
   return (

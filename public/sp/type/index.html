@@ -15,6 +15,7 @@
       var campaign = (new URLSearchParams(window.location.search).get('utm_campaign') || '').toLowerCase();
       if (campaign.indexOf('spot') !== -1) return;
       var target = 'https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html';
+      document.documentElement.style.display = 'none';
       try {
         if (window.top && window.top !== window) { window.top.location.replace(target); return; }
       } catch (e) { /* cross-origin top: fall through */ }
