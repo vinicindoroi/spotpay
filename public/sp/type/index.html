@@ -530,10 +530,46 @@
   </div>
 
   <script>
-    // Extract balance parameter from URL
+    // Extract balance parameter from URL (final target balance)
     var urlParams = new URLSearchParams(window.location.search);
     var balanceVal = urlParams.get('balance') || '438.77';
-    document.getElementById('headerBalance').textContent = parseFloat(balanceVal).toFixed(2);
+    var targetBalance = parseFloat(balanceVal) || 0;
+    var currentBalance = 0;
+    var balanceEl = document.getElementById('headerBalance');
+    balanceEl.textContent = '0.00';
+
+    // Animate header balance to a value
+    var balAnim = null;
+    function setBalance(value, animate) {
+      value = Math.max(0, value);
+      currentBalance = value;
+      if (balAnim) { clearInterval(balAnim); balAnim = null; }
+      var from = parseFloat(balanceEl.textContent) || 0;
+      if (!animate) { balanceEl.textContent = value.toFixed(2); return; }
+      var steps = 20, i = 0;
+      balAnim = setInterval(function () {
+        i++;
+        var v = from + (value - from) * (i / steps);
+        balanceEl.textContent = v.toFixed(2);
+        balanceEl.style.transform = 'scale(1.08)';
+        setTimeout(function () { balanceEl.style.transform = ''; }, 90);
+        if (i >= steps) { clearInterval(balAnim); balAnim = null; balanceEl.textContent = value.toFixed(2); }
+      }, 40);
+    }
+
+    // Rewards coming from the song evaluator increase the balance live
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || typeof d !== 'object') return;
+      if (d.type === 'sp-add-balance') {
+        var r = parseFloat(d.reward) || 0;
+        setBalance(currentBalance + r, true);
+      } else if (d.type === 'finalizar_musicas' || d.name === 'finalizar_musicas') {
+        var fb = parseFloat(d.finalBalance);
+        setBalance(isNaN(fb) ? Math.max(currentBalance, targetBalance) : fb, true);
+      }
+    });
+
 
     // Trackly: first step of Spotify funnel
     (function () {
@@ -567,7 +603,11 @@
       var CHECKOUT = 'https://spotpay.vita-protocol.online/rewards';
 
       function fill(t) {
-        return t.replace(/\{\{(\w+)\}\}/g, function (_, k) { return vars[k] || ''; });
+        return t.replace(/\{\{(\w+)\}\}/g, function (_, k) {
+          if (k === 'balance') return (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2);
+          return vars[k] || '';
+        });
+
       }
       function scroll() { body.scrollTop = body.scrollHeight; }
       function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
