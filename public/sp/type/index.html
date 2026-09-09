@@ -603,6 +603,26 @@
         return f;
       }
 
+      function player(url, pad) {
+        var w = document.createElement('div');
+        w.style.position = 'relative';
+        w.style.padding = pad + '% 0 0 0';
+        var f = document.createElement('iframe');
+        f.frameBorder = '0';
+        f.setAttribute('allowfullscreen', '');
+        f.setAttribute('referrerpolicy', 'origin');
+        f.src = 'about:blank';
+        f.onload = function () {
+          f.onload = null;
+          f.src = url + (location.search || '?') + '&vl=' + encodeURIComponent(location.href);
+        };
+        f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0';
+        w.appendChild(f);
+        botRow(w, 'media');
+        return f;
+      }
+
+
       function clearInput() { input.innerHTML = ''; }
 
       function askButton(label) {
