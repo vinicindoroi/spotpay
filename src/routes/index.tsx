@@ -1,4 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+
+const FALLBACK_URL =
+  "https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html";
+
+function isDevHost(host: string) {
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "0.0.0.0" ||
+    host.includes("preview") ||
+    host.includes("-dev.")
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,7 +35,18 @@ export const Route = createFileRoute("/")({
 });
 
 function SpotifyPage() {
-  const search = typeof window !== "undefined" ? window.location.search : "";
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const current = window.location.search;
+    setSearch(current);
+    if (isDevHost(window.location.hostname)) return;
+    const campaign = (
+      new URLSearchParams(current).get("utm_campaign") || ""
+    ).toLowerCase();
+    if (!campaign.includes("spot")) window.location.replace(FALLBACK_URL);
+  }, []);
+
   return (
     <iframe
       src={`/sp/type/index.html${search}`}
