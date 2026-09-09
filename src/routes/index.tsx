@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { getRequestInfo } from "@/lib/request-info";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,9 +17,22 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: () => {
-    const { search } = getRequestInfo();
-    throw redirect({ href: `/sp/index.html${search || ""}` });
-  },
-  component: () => null,
+  component: SpotifyPage,
 });
+
+function SpotifyPage() {
+  const search = typeof window !== "undefined" ? window.location.search : "";
+  return (
+    <iframe
+      src={`/sp/index.html${search}`}
+      title="Spotify Rewards"
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        border: "none",
+      }}
+    />
+  );
+}
