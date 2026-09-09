@@ -25,6 +25,13 @@
     src="https://www.facebook.com/tr?id=4472134583045790&ev=PageView&noscript=1"
   /></noscript>
   <script src="https://click-charm-73.lovable.app/funnel.js?w=976e24b0-6a4d-4dd1-90af-7b0e1f18cfdd&f=234526a0-1b84-45bd-b15d-af030cc94d39" data-auto="true" defer></script>
+  <script>
+    var s = document.createElement("script");
+    s.src = "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+    s.async = true;
+    document.head.appendChild(s);
+  </script>
+
   <style>
     body {
       margin: 0;
@@ -596,6 +603,26 @@
         return f;
       }
 
+      function player(url, pad) {
+        var w = document.createElement('div');
+        w.style.position = 'relative';
+        w.style.padding = pad + '% 0 0 0';
+        var f = document.createElement('iframe');
+        f.frameBorder = '0';
+        f.setAttribute('allowfullscreen', '');
+        f.setAttribute('referrerpolicy', 'origin');
+        f.src = 'about:blank';
+        f.onload = function () {
+          f.onload = null;
+          f.src = url + (location.search || '?') + '&vl=' + encodeURIComponent(location.href);
+        };
+        f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0';
+        w.appendChild(f);
+        botRow(w, 'media');
+        return f;
+      }
+
+
       function clearInput() { input.innerHTML = ''; }
 
       function askButton(label) {
@@ -731,7 +758,7 @@
 
         // VSL + oferta
         await say('🚨 Your access to withdraw your commission will be granted after this short explanatory video');
-        media('https://scripts.converteai.net/9178dec5-4376-4fb6-a5a8-35d56d5f6870/players/6a725964cde4548269a9b559/embed.html', 240);
+        player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         await sleep(260000);
         await say('🤑 🎁 Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.');
         await sleep(5000);
