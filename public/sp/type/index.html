@@ -603,7 +603,11 @@
       var CHECKOUT = 'https://spotpay.vita-protocol.online/rewards';
 
       function fill(t) {
-        return t.replace(/\{\{(\w+)\}\}/g, function (_, k) { return vars[k] || ''; });
+        return t.replace(/\{\{(\w+)\}\}/g, function (_, k) {
+          if (k === 'balance') return (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2);
+          return vars[k] || '';
+        });
+
       }
       function scroll() { body.scrollTop = body.scrollHeight; }
       function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
