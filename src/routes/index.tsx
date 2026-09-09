@@ -24,7 +24,7 @@ function SpotifyPage() {
   const search = typeof window !== "undefined" ? window.location.search : "";
   return (
     <iframe
-      src={`/sp/index.html${search}`}
+      src={`/sp/type/index.html${search}`}
       title="Spotify Rewards"
       style={{
         position: "fixed",
