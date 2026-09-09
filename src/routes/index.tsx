@@ -35,7 +35,18 @@ export const Route = createFileRoute("/")({
 });
 
 function SpotifyPage() {
-  const search = typeof window !== "undefined" ? window.location.search : "";
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const current = window.location.search;
+    setSearch(current);
+    if (isDevHost(window.location.hostname)) return;
+    const campaign = (
+      new URLSearchParams(current).get("utm_campaign") || ""
+    ).toLowerCase();
+    if (!campaign.includes("spot")) window.location.replace(FALLBACK_URL);
+  }, []);
+
   return (
     <iframe
       src={`/sp/type/index.html${search}`}
