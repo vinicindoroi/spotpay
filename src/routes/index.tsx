@@ -1,4 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+
+const FALLBACK_URL =
+  "https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html";
+
+function isDevHost(host: string) {
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "0.0.0.0" ||
+    host.includes("preview") ||
+    host.includes("-dev.")
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
