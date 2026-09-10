@@ -1,19 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-const FALLBACK_URL =
-  "https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html";
-
-// Runs as an inline blocking script in <head>, before anything paints.
-const GUARD_SCRIPT = `(function(){
-var host=window.location.hostname;
-var isDev=host==='localhost'||host==='127.0.0.1'||host==='0.0.0.0'||host.indexOf('preview')!==-1||host.indexOf('-dev.')!==-1;
-if(isDev)return;
-var campaign=(new URLSearchParams(window.location.search).get('utm_campaign')||'').toLowerCase();
-if(campaign.indexOf('spot')!==-1)return;
-document.documentElement.style.display='none';
-window.location.replace('${FALLBACK_URL}');
-})();`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,7 +19,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     scripts: [
-      { children: GUARD_SCRIPT },
+      
       {
         children: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "yft2re9p41");`,
       },
