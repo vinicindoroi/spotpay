@@ -24,7 +24,7 @@
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=4472134583045790&ev=PageView&noscript=1"
   /></noscript>
-  <script src="https://click-charm-73.lovable.app/funnel.js?w=976e24b0-6a4d-4dd1-90af-7b0e1f18cfdd&f=234526a0-1b84-45bd-b15d-af030cc94d39" data-auto="true" defer></script>
+  <script src="https://click-charm-73.lovable.app/funnel.js?w=976e24b0-6a4d-4dd1-90af-7b0e1f18cfdd&f=9af23cbc-93d1-4812-9666-84637488d471" data-auto="true" defer></script>
   <script>
     var s = document.createElement("script");
     s.src = "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
@@ -727,17 +727,23 @@
       }
 
       function step(name) {
-        var trk = window.trkFunnel;
-        if (trk && typeof trk.step === 'function') { try { trk.step(name); } catch (e) {} }
+        var tries = 0;
+        (function attempt() {
+          var trk = window.trkFunnel;
+          if (trk && typeof trk.step === 'function') { try { trk.step(name); } catch (e) {} return; }
+          if (++tries <= 40) setTimeout(attempt, 250);
+        })();
       }
 
       async function run() {
         // Etapa 01
+        step('inicio');
         await say('To begin your service, your case number is 809821');
         await sleep(4000);
         await say("You've been one of the few people selected for the Spotify Rewards Program");
         await sleep(3000);
         await say("We've selected four songs for you to listen to and rate. Get started right here below. 👇");
+        step('avaliacao');
         media('/sp/songs/index.html', 520);
         await waitForSongs(600000);
         await sleep(3000);
@@ -746,6 +752,7 @@
         await say('(Click the button below to continue with your withdrawal)');
 
         // Etapa 02
+        step('start_verification');
         await askButton('Start Verification');
         step('iniciouspt');
         await sleep(2000);
@@ -762,11 +769,13 @@
         await askButton('Yes, I would like to withdraw');
 
         // Etapa 03
+        step('yes_i_do');
         await say("Would you like to receive your reward for the work you've done?");
         await say('(Click the button below to continue)');
         await askButton('Yes, I do!');
 
         // Etapa 04 - name
+        step('coleta_de_nome');
         await say("✅ Okay, I'll continue with your registration.");
         await sleep(3000);
         await say("At this stage, I need you to tell me your name so I can verify that you're a new user.");
@@ -778,11 +787,13 @@
         await sleep(6000);
 
         // Etapa 05
+        step('elegibilidade');
         await say('⌛ Just a moment...');
         await sleep(10000);
         await say('Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}');
 
         // Etapa 06
+        step('recibo');
         await sleep(3000);
         await say('I\u2019m sending you the receipt for your commissions 👇🏻');
         await sleep(1000);
@@ -799,6 +810,7 @@
         step('vslspt');
 
         // VSL + oferta
+        step('vsl_checkout');
         await say('🚨 Your access to withdraw your commission will be granted after this short explanatory video');
         player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         await sleep(260000);
