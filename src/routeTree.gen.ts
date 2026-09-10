@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Up1RouteImport } from './routes/up1'
+import { Route as Up2RouteImport } from './routes/up2'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const Up1Route = Up1RouteImport.update({
   path: '/up1',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Up2Route = Up2RouteImport.update({
+  id: '/up2',
+  path: '/up2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/up1': typeof Up1Route
+  '/up2': typeof Up2Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/up1': typeof Up1Route
+  '/up2': typeof Up2Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/up1': typeof Up1Route
+  '/up2': typeof Up2Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/up1'
+  fullPaths: '/' | '/up1' | '/up2'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/up1'
-  id: '__root__' | '/' | '/up1'
+  to: '/' | '/up1' | '/up2'
+  id: '__root__' | '/' | '/up1' | '/up2'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Up1Route: typeof Up1Route
+  Up2Route: typeof Up2Route
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Up1RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/up2': {
+      id: '/up2'
+      path: '/up2'
+      fullPath: '/up2'
+      preLoaderRoute: typeof Up2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Up1Route: Up1Route,
+  Up2Route: Up2Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
