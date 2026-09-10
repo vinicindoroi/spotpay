@@ -212,11 +212,37 @@
         requestAnimationFrame(function () { b.classList.add('visible'); });
       }
 
-      function buildCheckoutUrl(email) {
-        var base = 'https://go.centerpag.com/PPU38CQDBC1?upsell=true';
-        var extra = { ur: '1' };
-        if (email) extra.e = email;
-        return window.spWithParams ? window.spWithParams(base, extra) : base;
+      var WORKER_URL = 'https://SEU-WORKER-AQUI.workers.dev/api/stripe-charge-upsell';
+
+      function chargeUpsell(email, onOk, onErr) {
+        var p = window.spUpsellParams || {};
+        var cid = p.cid || '';
+        var pm = p.pm || '';
+        if (!cid || !pm) {
+          onErr('Warning: payment information not found in URL.');
+          return;
+        }
+        fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_id: cid,
+            payment_method_id: pm,
+            upsell_number: 1,
+            email: email
+          })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data && data.ok && data.next_url) {
+              onOk(data.next_url);
+            } else {
+              onErr((data && data.error) || 'Payment declined. Please try again.');
+            }
+          })
+          .catch(function () {
+            onErr('Connection failed. Check your internet and try again.');
+          });
       }
 
       function sendConfirmEmail(email) {
@@ -255,7 +281,8 @@
             '<input id="spEmail" type="email" inputmode="email" autocomplete="email" placeholder="Enter the email linked to your account" value="' + prefill.replace(/"/g, '&quot;') + '" ' +
               'style="width:100%;margin-top:10px;padding:13px 14px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:Inter,sans-serif;color:#111;outline:none;background:#fafafa" />' +
             '<div id="spEmailErr" style="display:none;color:#dc2626;font-size:12px;margin-top:6px">Enter a valid email to release your bonus.</div>' +
-            '<button id="spConfirmBtn" type="button" class="checkout-btn" style="margin-top:12px">Confirm email &amp; release my bonus</button>' +
+            '<button id="spConfirmBtn" type="button" class="checkout-btn" style="margin-top:12px">YES! ADD TO MY ORDER</button>' +
+            '<div id="spPayErr" style="display:none;color:#f15e6c;font-size:13px;font-weight:500;margin-top:10px;text-align:center"></div>' +
             '<div style="font-size:11px;color:#8a8a8e;margin-top:8px;text-align:center">A confirmation link will be sent to your inbox. Can\'t find it? Check spam.</div>' +
           '</div>';
         stream.appendChild(card);
@@ -265,6 +292,7 @@
         var input = card.querySelector('#spEmail');
         var btn = card.querySelector('#spConfirmBtn');
         var err = card.querySelector('#spEmailErr');
+        var payErr = card.querySelector('#spPayErr');
         btn.addEventListener('click', function () {
           var email = (input.value || '').trim();
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -273,13 +301,22 @@
             return;
           }
           err.style.display = 'none';
+          payErr.style.display = 'none';
           btn.disabled = true;
-          btn.textContent = 'Confirming...';
+          btn.textContent = 'PROCESSING...';
           sendConfirmEmail(email);
           document.getElementById('loadingOverlay').style.display = 'flex';
-          setTimeout(function () {
-            window.top.location.href = buildCheckoutUrl(email);
-          }, 350);
+          chargeUpsell(email, function (nextUrl) {
+            setTimeout(function () {
+              window.top.location.href = nextUrl;
+            }, 350);
+          }, function (msg) {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            payErr.textContent = msg;
+            payErr.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'YES! ADD TO MY ORDER';
+          });
         });
       }
 
