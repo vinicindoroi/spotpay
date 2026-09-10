@@ -212,7 +212,7 @@
         requestAnimationFrame(function () { b.classList.add('visible'); });
       }
 
-      var WORKER_URL = 'https://stripecheckout.vinicio-bdf.workers.dev/api/stripe-charge-upsell';
+      var WORKER_URL = 'https://spotpay-v2.vinicio-bdf.workers.dev/api/stripe-charge-upsell';
 
       function chargeUpsell(email, onOk, onErr) {
         var p = window.spUpsellParams || {};
