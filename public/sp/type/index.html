@@ -527,6 +527,7 @@
       currentBalance = value;
       if (balAnim) { clearInterval(balAnim); balAnim = null; }
       var from = parseFloat(balanceEl.textContent) || 0;
+      if (value > from && navigator.vibrate) { try { navigator.vibrate(80); } catch (err) {} }
       if (!animate) { balanceEl.textContent = value.toFixed(2); return; }
       var steps = 20, i = 0;
       balAnim = setInterval(function () {
