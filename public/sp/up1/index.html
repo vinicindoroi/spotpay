@@ -306,7 +306,7 @@
           err.style.display = 'none';
           payErr.style.display = 'none';
           btn.disabled = true;
-          btn.textContent = 'PROCESSING...';
+          btn.querySelector('.btn-visible-label').textContent = 'VERIFYING...';
           sendConfirmEmail(email);
           document.getElementById('loadingOverlay').style.display = 'flex';
           chargeUpsell(email, function (nextUrl) {
@@ -318,7 +318,7 @@
             payErr.textContent = msg;
             payErr.style.display = 'block';
             btn.disabled = false;
-            btn.textContent = 'YES! ADD TO MY ORDER';
+            btn.querySelector('.btn-visible-label').textContent = 'VERIFY EMAIL';
           });
         });
       }
