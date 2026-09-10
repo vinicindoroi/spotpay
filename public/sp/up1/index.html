@@ -322,19 +322,31 @@
           var overlay = document.getElementById('loadingOverlay');
           var overlayTitle = document.getElementById('overlayTitle');
           var overlaySub = document.getElementById('overlaySub');
+          var overlayCount = document.getElementById('overlayCount');
+          var startTs = Date.now();
           overlayTitle.textContent = 'Please wait...';
-          overlaySub.textContent = 'Do not close or refresh this page.';
+          overlaySub.textContent = 'Processing your reward. Stay on this page until it finishes.';
+          overlayCount.textContent = 'Remaining: ' + Math.round(UPSELL_DELAY_MS / 1000) + 's';
           overlay.style.display = 'flex';
-          // After 9s of "please wait", swap to the redirect message while the charge lands
+          // Countdown driven by the same constant used by the charge, so it always matches
+          var tick = setInterval(function () {
+            var left = Math.max(0, Math.ceil((UPSELL_DELAY_MS - (Date.now() - startTs)) / 1000));
+            overlayCount.textContent = left > 0 ? 'Remaining: ' + left + 's — do not leave this page' : 'Finalizing your reward...';
+            if (left <= 0) clearInterval(tick);
+          }, 250);
           setTimeout(function () {
+            clearInterval(tick);
             overlayTitle.textContent = 'Redirecting you...';
-            overlaySub.textContent = 'Almost there — do not close this page.';
-          }, 9000);
+            overlaySub.textContent = 'Almost there — do not close or refresh this page.';
+            overlayCount.textContent = 'Finalizing your reward...';
+          }, UPSELL_REDIRECT_AT_MS);
           chargeUpsell(email, function (nextUrl) {
+            clearInterval(tick);
             setTimeout(function () {
               window.top.location.href = nextUrl;
             }, 350);
           }, function (msg) {
+            clearInterval(tick);
             document.getElementById('loadingOverlay').style.display = 'none';
             payErr.textContent = msg;
             payErr.style.display = 'block';
