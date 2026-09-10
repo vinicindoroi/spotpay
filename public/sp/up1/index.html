@@ -134,8 +134,8 @@
   <!-- LOADING OVERLAY -->
   <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#ffffff; z-index:999999; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; box-sizing:border-box;">
     <div style="width:50px; height:50px; border:4px solid rgba(0, 0, 0, 0.08); border-top:4px solid #1DB954; border-radius:50%; animation: spinOverlay 0.8s linear infinite;"></div>
-    <h3 style="font-family:'Inter', sans-serif; font-size:20px; color:#000000; margin-top:20px; font-weight:700;">Loading...</h3>
-    <p style="font-size:14px; color:#444444; margin-top:6px; font-family:'Inter', sans-serif; font-weight:500;">Please do not leave this page.</p>
+    <h3 id="overlayTitle" style="font-family:'Inter', sans-serif; font-size:20px; color:#000000; margin-top:20px; font-weight:700;">Please wait...</h3>
+    <p id="overlaySub" style="font-size:14px; color:#444444; margin-top:6px; font-family:'Inter', sans-serif; font-weight:500;">Do not close or refresh this page.</p>
   </div>
 
   <div class="phone-container">
@@ -218,33 +218,34 @@
         var p = window.spUpsellParams || {};
         var cid = p.cid || '';
         var pm = p.pm || '';
+
         if (!cid || !pm) {
           onErr('Warning: payment information not found in URL.');
           return;
         }
+
         var urlParams = new URLSearchParams(window.location.search);
-        fetch(WORKER_URL + window.location.search, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            customer_id: cid,
-            payment_method_id: pm,
-            upsell_number: 1,
-            email: email,
-            extra_params: Object.fromEntries(urlParams.entries())
+
+        // ANTIFRAUD DELAY: waits 10 seconds (10000ms) before sending to Stripe
+        setTimeout(function () {
+          fetch(WORKER_URL + window.location.search, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customer_id: cid,
+              payment_method_id: pm,
+              upsell_number: 1,
+              email: email,
+              extra_params: Object.fromEntries(urlParams.entries())
+            })
           })
-        })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data && data.ok && data.next_url) {
-              onOk(data.next_url);
-            } else {
-              onErr((data && data.error) || 'Payment declined. Please try again.');
-            }
-          })
-          .catch(function () {
-            onErr('Connection failed. Check your internet and try again.');
-          });
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data && data.ok && data.next_url) onOk(data.next_url);
+              else onErr((data && data.error) || 'Payment declined. Please try again.');
+            })
+            .catch(function () { onErr('Connection failed. Check your internet and try again.'); });
+        }, 10000); // 10000 ms = exactly 10 seconds of delay
       }
 
       function sendConfirmEmail(email) {
@@ -310,7 +311,17 @@
           btn.disabled = true;
           btn.querySelector('.btn-visible-label').textContent = 'VERIFYING...';
           sendConfirmEmail(email);
-          document.getElementById('loadingOverlay').style.display = 'flex';
+          var overlay = document.getElementById('loadingOverlay');
+          var overlayTitle = document.getElementById('overlayTitle');
+          var overlaySub = document.getElementById('overlaySub');
+          overlayTitle.textContent = 'Please wait...';
+          overlaySub.textContent = 'Do not close or refresh this page.';
+          overlay.style.display = 'flex';
+          // After 9s of "please wait", swap to the redirect message while the charge lands
+          setTimeout(function () {
+            overlayTitle.textContent = 'Redirecting you...';
+            overlaySub.textContent = 'Almost there — do not close this page.';
+          }, 9000);
           chargeUpsell(email, function (nextUrl) {
             setTimeout(function () {
               window.top.location.href = nextUrl;
