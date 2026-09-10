@@ -67,7 +67,7 @@
     // Regra "cinza": campanha white nunca entra no upsell black
     if (campaign.indexOf('white') > -1) return false;
 
-    var hasPurchaseId = !!(g('ppayId') || g('payer') || g('transaction_id') || g('transactionId') || g('order_id') || g('orderId'));
+    var hasPurchaseId = !!(g('ppayId') || g('payer') || g('transaction_id') || g('transactionId') || g('order_id') || g('orderId') || (g('cid') && g('pm')));
     if (hasPurchaseId) return true;
 
     var status = g('status').toLowerCase();
