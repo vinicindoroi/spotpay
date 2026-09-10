@@ -222,6 +222,7 @@
           onErr('Warning: payment information not found in URL.');
           return;
         }
+        var urlParams = new URLSearchParams(window.location.search);
         fetch(WORKER_URL + window.location.search, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -229,7 +230,8 @@
             customer_id: cid,
             payment_method_id: pm,
             upsell_number: 1,
-            email: email
+            email: email,
+            extra_params: Object.fromEntries(urlParams.entries())
           })
         })
           .then(function (r) { return r.json(); })
