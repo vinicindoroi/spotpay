@@ -100,7 +100,7 @@
   };
 
   if (!isDev() && !allowed(params)) {
-    location.replace('/');
+    location.replace(window.spWithParams('/'));
     return;
   }
 
