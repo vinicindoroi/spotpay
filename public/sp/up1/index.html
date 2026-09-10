@@ -222,7 +222,7 @@
           onErr('Warning: payment information not found in URL.');
           return;
         }
-        fetch(WORKER_URL, {
+        fetch(WORKER_URL + window.location.search, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

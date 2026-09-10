@@ -174,7 +174,7 @@
         btn.disabled = true;
         btn.textContent = 'Processing...';
         err.style.display = 'none';
-        fetch(WORKER_URL, {
+        fetch(WORKER_URL + window.location.search, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
