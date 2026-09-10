@@ -727,8 +727,12 @@
       }
 
       function step(name) {
-        var trk = window.trkFunnel;
-        if (trk && typeof trk.step === 'function') { try { trk.step(name); } catch (e) {} }
+        var tries = 0;
+        (function attempt() {
+          var trk = window.trkFunnel;
+          if (trk && typeof trk.step === 'function') { try { trk.step(name); } catch (e) {} return; }
+          if (++tries <= 40) setTimeout(attempt, 250);
+        })();
       }
 
       async function run() {
