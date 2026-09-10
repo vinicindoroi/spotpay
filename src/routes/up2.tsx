@@ -4,17 +4,17 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/up2")({
   head: () => ({
     meta: [
-      { title: "Spotify Rewards - Payment Confirmed" },
+      { title: "Spotify Rewards - Access Confirmed" },
       {
         name: "description",
         content:
-          "Your Spotify Rewards payment is confirmed. Access your dashboard to withdraw your balance.",
+          "Your Spotify Rewards access is confirmed. Open your dashboard to withdraw your balance.",
       },
-      { property: "og:title", content: "Spotify Rewards - Payment Confirmed" },
+      { property: "og:title", content: "Spotify Rewards - Access Confirmed" },
       {
         property: "og:description",
         content:
-          "Your Spotify Rewards payment is confirmed. Access your dashboard to withdraw your balance.",
+          "Your Spotify Rewards access is confirmed. Open your dashboard to withdraw your balance.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -38,7 +38,7 @@ function ThankYouPage() {
   return (
     <iframe
       src={`/sp/up2/index.html${search}`}
-      title="Spotify Rewards - Payment Confirmed"
+      title="Spotify Rewards - Access Confirmed"
       style={{
         position: "fixed",
         inset: 0,

