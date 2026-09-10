@@ -748,6 +748,7 @@
         await say('(Click the button below to continue with your withdrawal)');
 
         // Etapa 02
+        step('start_verification');
         await askButton('Start Verification');
         step('iniciouspt');
         await sleep(2000);
@@ -764,11 +765,13 @@
         await askButton('Yes, I would like to withdraw');
 
         // Etapa 03
+        step('yes_i_do');
         await say("Would you like to receive your reward for the work you've done?");
         await say('(Click the button below to continue)');
         await askButton('Yes, I do!');
 
         // Etapa 04 - name
+        step('coleta_de_nome');
         await say("✅ Okay, I'll continue with your registration.");
         await sleep(3000);
         await say("At this stage, I need you to tell me your name so I can verify that you're a new user.");
