@@ -783,11 +783,13 @@
         await sleep(6000);
 
         // Etapa 05
+        step('elegibilidade');
         await say('⌛ Just a moment...');
         await sleep(10000);
         await say('Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}');
 
         // Etapa 06
+        step('recibo');
         await sleep(3000);
         await say('I\u2019m sending you the receipt for your commissions 👇🏻');
         await sleep(1000);
@@ -804,6 +806,7 @@
         step('vslspt');
 
         // VSL + oferta
+        step('vsl_checkout');
         await say('🚨 Your access to withdraw your commission will be granted after this short explanatory video');
         player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         await sleep(260000);
