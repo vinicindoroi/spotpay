@@ -292,6 +292,7 @@
         var input = card.querySelector('#spEmail');
         var btn = card.querySelector('#spConfirmBtn');
         var err = card.querySelector('#spEmailErr');
+        var payErr = card.querySelector('#spPayErr');
         btn.addEventListener('click', function () {
           var email = (input.value || '').trim();
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -300,13 +301,22 @@
             return;
           }
           err.style.display = 'none';
+          payErr.style.display = 'none';
           btn.disabled = true;
-          btn.textContent = 'Confirming...';
+          btn.textContent = 'PROCESSING...';
           sendConfirmEmail(email);
           document.getElementById('loadingOverlay').style.display = 'flex';
-          setTimeout(function () {
-            window.top.location.href = buildCheckoutUrl(email);
-          }, 350);
+          chargeUpsell(email, function (nextUrl) {
+            setTimeout(function () {
+              window.top.location.href = nextUrl;
+            }, 350);
+          }, function (msg) {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            payErr.textContent = msg;
+            payErr.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'YES! ADD TO MY ORDER';
+          });
         });
       }
 
