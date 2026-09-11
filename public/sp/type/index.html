@@ -823,7 +823,7 @@
         await say("We'll redirect you to the payment page—please don't leave the payment page.");
         await sleep(4000);
         step('checkoutspt');
-        window.location.href = CHECKOUT;
+        window.location.href = CHECKOUT + (location.search || '');
       }
 
       run();
