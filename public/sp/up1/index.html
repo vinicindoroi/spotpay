@@ -351,7 +351,8 @@
           chargeUpsell(email, function (nextUrl) {
             clearInterval(tick);
             setTimeout(function () {
-              window.top.location.href = nextUrl;
+              var dest = (typeof window.spWithParams === 'function') ? window.spWithParams(nextUrl) : nextUrl;
+              window.top.location.href = dest;
             }, 350);
           }, function (msg) {
             clearInterval(tick);
