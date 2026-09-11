@@ -181,33 +181,67 @@
         return;
       }
 
+      // Single source of truth: loading screen and charge share this delay.
+      var UPSELL_DELAY_MS = 20000;
+      var UPSELL_REDIRECT_AT_MS = UPSELL_DELAY_MS - 1000;
+
       btn.addEventListener('click', function () {
         btn.disabled = true;
         btn.textContent = 'Processing...';
         err.style.display = 'none';
+
+        var overlay = document.getElementById('loadingOverlay');
+        var overlayTitle = document.getElementById('overlayTitle');
+        var overlaySub = document.getElementById('overlaySub');
+        var overlayCount = document.getElementById('overlayCount');
+        var startTs = Date.now();
+        overlayTitle.textContent = 'Please wait...';
+        overlaySub.textContent = 'Processing your reward. Stay on this page until it finishes.';
+        overlayCount.textContent = 'Remaining: ' + Math.round(UPSELL_DELAY_MS / 1000) + 's';
+        overlay.style.display = 'flex';
+        var tick = setInterval(function () {
+          var left = Math.max(0, Math.ceil((UPSELL_DELAY_MS - (Date.now() - startTs)) / 1000));
+          overlayCount.textContent = left > 0 ? 'Remaining: ' + left + 's — do not leave this page' : 'Finalizing your reward...';
+          if (left <= 0) clearInterval(tick);
+        }, 250);
+        setTimeout(function () {
+          clearInterval(tick);
+          overlayTitle.textContent = 'Redirecting you...';
+          overlaySub.textContent = 'Almost there — do not close or refresh this page.';
+          overlayCount.textContent = 'Finalizing your reward...';
+        }, UPSELL_REDIRECT_AT_MS);
+
         var urlParams = new URLSearchParams(window.location.search);
-        fetch(WORKER_URL + window.location.search, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            customer_id: cid,
-            payment_method_id: pm,
-            upsell_number: 2,
-            email: email,
-            extra_params: Object.fromEntries(urlParams.entries())
+        // ANTIFRAUD DELAY: waits UPSELL_DELAY_MS before sending to Stripe
+        setTimeout(function () {
+          fetch(WORKER_URL + window.location.search, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customer_id: cid,
+              payment_method_id: pm,
+              upsell_number: 2,
+              email: email,
+              extra_params: Object.fromEntries(urlParams.entries())
+            })
           })
-        })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data && data.ok) {
-              setTimeout(go, 350);
-            } else {
-              showError((data && data.error) || 'Access could not be confirmed. Please try again.');
-            }
-          })
-          .catch(function () {
-            showError('Connection failed. Check your internet and try again.');
-          });
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data && data.ok) {
+                clearInterval(tick);
+                setTimeout(go, 350);
+              } else {
+                clearInterval(tick);
+                overlay.style.display = 'none';
+                showError((data && data.error) || 'Access could not be confirmed. Please try again.');
+              }
+            })
+            .catch(function () {
+              clearInterval(tick);
+              overlay.style.display = 'none';
+              showError('Connection failed. Check your internet and try again.');
+            });
+        }, UPSELL_DELAY_MS);
       });
     })();
   </script>
