@@ -332,16 +332,18 @@
           var startTs = Date.now();
           overlayTitle.textContent = 'Please wait...';
           overlaySub.textContent = 'Processing your reward. Stay on this page until it finishes.';
-          overlayCount.textContent = 'Remaining: ' + Math.round(UPSELL_DELAY_MS / 1000) + 's';
+          overlayCount.textContent = 'Processing... do not leave this page';
           overlay.style.display = 'flex';
-          // Countdown driven by the same constant used by the charge, so it always matches
+          var overlayBar = document.getElementById('overlayBar');
+          // Progress bar driven by the same constant used by the charge, so it always matches
           var tick = setInterval(function () {
-            var left = Math.max(0, Math.ceil((UPSELL_DELAY_MS - (Date.now() - startTs)) / 1000));
-            overlayCount.textContent = left > 0 ? 'Remaining: ' + left + 's — do not leave this page' : 'Finalizing your reward...';
-            if (left <= 0) clearInterval(tick);
+            var pct = Math.min(100, ((Date.now() - startTs) / UPSELL_DELAY_MS) * 100);
+            if (overlayBar) overlayBar.style.width = pct + '%';
+            if (pct >= 100) clearInterval(tick);
           }, 250);
           setTimeout(function () {
             clearInterval(tick);
+            if (overlayBar) overlayBar.style.width = '100%';
             overlayTitle.textContent = 'Redirecting you...';
             overlaySub.textContent = 'Almost there — do not close or refresh this page.';
             overlayCount.textContent = 'Finalizing your reward...';
