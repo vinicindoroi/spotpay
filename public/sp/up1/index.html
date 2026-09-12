@@ -287,8 +287,7 @@
 
       function addCheckout() {
         if (!stream) return;
-        var p = window.spUpsellParams || {};
-        var prefill = p.e || p.email || p.payerEmail || '';
+        var prefill = '';
         var card = document.createElement('div');
         card.className = 'checkout-card';
         card.innerHTML =
