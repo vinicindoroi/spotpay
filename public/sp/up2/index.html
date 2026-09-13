@@ -72,6 +72,29 @@
     }
     .row span { color: #8a8a8e; }
     .row b { color: #1DB954; font-weight: 800; letter-spacing: -0.2px; }
+    .tasks { margin-top: 20px; text-align: left; }
+    .tasks-title { font-size: 12px; font-weight: 700; color: #b9b9bf; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+    .task {
+      display: flex; align-items: flex-start; gap: 11px;
+      background: #181818; border: 1px solid #282828; border-radius: 14px;
+      padding: 12px 14px; margin-top: 8px; cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      user-select: none; -webkit-user-select: none;
+    }
+    .task:hover { border-color: rgba(29, 185, 84, 0.35); }
+    .task.done { border-color: rgba(29, 185, 84, 0.55); background: rgba(29, 185, 84, 0.07); }
+    .task-check { position: absolute; opacity: 0; pointer-events: none; }
+    .task-box {
+      flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px;
+      border: 2px solid #3a3a3e; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s ease;
+    }
+    .task-box svg { width: 13px; height: 13px; stroke: #04150b; stroke-width: 3.4; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transform: scale(0.5); transition: all 0.18s ease; }
+    .task-check:checked + .task-box { background: linear-gradient(135deg, #1ed760, #1DB954); border-color: #1DB954; box-shadow: 0 0 12px rgba(29, 185, 84, 0.45); }
+    .task-check:checked + .task-box svg { opacity: 1; transform: scale(1); }
+    .task-text { font-size: 13px; line-height: 1.45; color: #d7d7db; font-weight: 500; }
+    .task.done .task-text { color: #fff; }
     .access-btn {
       display: block; width: 100%; margin-top: 22px;
       background: linear-gradient(135deg, #1DB954, #16a34a);
@@ -133,7 +156,32 @@
     <div class="row"><span>Status</span><b>CONFIRMED</b></div>
     <div class="row"><span>Reward access</span><b>UNLOCKED</b></div>
 
-    <button id="accessBtn" class="access-btn" type="button" data-funnel-step="upsell2">Access now</button>
+    <div class="tasks">
+      <p class="tasks-title">Complete the steps below to unlock access:</p>
+      <label class="task">
+        <input type="checkbox" class="task-check">
+        <span class="task-box">
+          <svg viewBox="0 0 24 24"><polyline points="4.5 12.5 9.5 17.5 19.5 7" /></svg>
+        </span>
+        <span class="task-text">I confirm this is my account and I want to receive my reward</span>
+      </label>
+      <label class="task">
+        <input type="checkbox" class="task-check">
+        <span class="task-box">
+          <svg viewBox="0 0 24 24"><polyline points="4.5 12.5 9.5 17.5 19.5 7" /></svg>
+        </span>
+        <span class="task-text">I understand my balance expires if I don't access it today</span>
+      </label>
+      <label class="task">
+        <input type="checkbox" class="task-check">
+        <span class="task-box">
+          <svg viewBox="0 0 24 24"><polyline points="4.5 12.5 9.5 17.5 19.5 7" /></svg>
+        </span>
+        <span class="task-text">I agree to keep the app installed for 7 days to keep the reward</span>
+      </label>
+    </div>
+
+    <button id="accessBtn" class="access-btn" type="button" data-funnel-step="upsell2" disabled>Access now</button>
     <div id="accessErr" class="err"></div>
 
     <p class="note">You will be redirected to your Spotify Rewards dashboard. Do not close this page.</p>
