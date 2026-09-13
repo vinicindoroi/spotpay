@@ -106,7 +106,7 @@
       transition: transform 0.15s ease;
     }
     .access-btn:active { transform: scale(0.98); }
-    .access-btn:disabled { opacity: 0.65; cursor: default; animation: none; }
+    .access-btn:disabled { opacity: 0.45; cursor: not-allowed; animation: none; box-shadow: none; filter: grayscale(0.35); }
     @keyframes spinOverlay { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes pulseBtn {
       0%, 100% { box-shadow: 0 8px 26px rgba(29, 185, 84, 0.45); }
