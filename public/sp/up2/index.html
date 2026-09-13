@@ -213,6 +213,20 @@
         return p;
       }
 
+      // Checklist gate: button only unlocks when every item is checked.
+      var checks = Array.prototype.slice.call(document.querySelectorAll('.task-check'));
+      function refreshGate() {
+        var all = checks.every(function (c) { return c.checked; });
+        btn.disabled = !all;
+        btn.textContent = all ? 'Access now' : 'Complete the steps above';
+        checks.forEach(function (c) {
+          var label = c.closest('.task');
+          if (label) label.classList.toggle('done', c.checked);
+        });
+      }
+      checks.forEach(function (c) { c.addEventListener('change', refreshGate); });
+      refreshGate();
+
       var params = urlParams();
       var cid = params.cid || '';
       var pm = params.pm || '';
