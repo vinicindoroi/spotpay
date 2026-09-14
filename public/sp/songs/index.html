@@ -317,11 +317,33 @@
     .success-title { font-size: 14px; font-weight: 700; color: #ffffff; }
     .received-label { font-size: 11px; color: #b3b3b3; text-transform: uppercase; letter-spacing: 0.5px; }
     .received-val { font-size: 22px; font-weight: 800; color: #1DB954; }
+
+    .progress-head { margin-bottom: 10px; }
+    .progress-top {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; color: #b3b3b3; margin-bottom: 6px;
+    }
+    .progress-earned { color: #1DB954; font-size: 12px; }
+    .progress-track { height: 6px; background: #2a2a2a; border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; border-radius: 99px; background: #1DB954;
+      box-shadow: 0 0 10px rgba(29,185,84,.6); transition: width .5s ease;
+    }
   </style>
 </head>
 <body>
 
   <div class="widget-card">
+
+    <!-- PROGRESS -->
+    <div class="progress-head">
+      <div class="progress-top">
+        <span id="progressLabel">Song 1 of 2</span>
+        <span class="progress-earned" id="progressEarned">Earned $0.00</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
 
     <!-- INSTRUCTION BANNER -->
     <div class="instruction-banner" id="instructionBanner">
@@ -359,7 +381,7 @@
           <button class="yn-btn" id="q1No">No</button>
         </div>
       </div>
-      <div class="question-block">
+      <div class="question-block" id="q2Block" style="display:none">
         <p class="question-title" id="q2Title">Do you usually listen to Someone Like You?</p>
         <div class="yn-row">
           <button class="yn-btn" id="q2Yes">Yes</button>
@@ -387,11 +409,11 @@
 
   <script>
     var SONGS = [
-      { name: 'Someone Like You', artist: 'Adele',          cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover1.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song1.mp3', reward: 101.10 },
-      { name: 'good 4 u',         artist: 'Olivia Rodrigo', cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover2.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song2.mp3', reward: 111.21 },
-      { name: 'Blinding Lights',  artist: 'The Weeknd',     cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover3.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song3.mp3', reward: 121.85 },
-      { name: 'Levitating',       artist: 'Dua Lipa',       cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover4.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song4.mp3', reward: 104.61 }
+      { name: 'Someone Like You', artist: 'Adele',          cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover1.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song1.mp3', reward: 219.38 },
+      { name: 'good 4 u',         artist: 'Olivia Rodrigo', cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover2.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song2.mp3', reward: 219.39 }
     ];
+
+    var earnedTotal = 0;
 
     var songIndex = 0;
     var totalDone = 0;
@@ -433,6 +455,18 @@
     var finishBtn = document.getElementById('finishBtn');
     var successCard = document.getElementById('successCard');
     var rewardAmount = document.getElementById('rewardAmount');
+    var progressLabel = document.getElementById('progressLabel');
+    var progressEarned = document.getElementById('progressEarned');
+    var progressFill = document.getElementById('progressFill');
+
+    function updateProgress() {
+      var current = Math.min(totalDone + 1, SONGS.length);
+      progressLabel.textContent = totalDone >= SONGS.length
+        ? 'All songs rated'
+        : 'Song ' + current + ' of ' + SONGS.length;
+      progressEarned.textContent = 'Earned $' + earnedTotal.toFixed(2);
+      progressFill.style.width = ((totalDone / SONGS.length) * 100) + '%';
+    }
 
     function sendBalanceToParent(rewardVal) {
       var msg = { type: 'sp-add-balance', reward: rewardVal };
@@ -534,10 +568,11 @@
       instructionBanner.style.display = 'block';
       instructionBanner.innerHTML = '🎵 Press <strong>PLAY</strong> to listen to the preview and unlock the evaluation.';
       successCard.classList.remove('show');
+      updateProgress();
     }
 
     function checkReady() {
-      if (q1Answer !== null && q2Answer !== null && songUnlocked) {
+      if (q1Answer !== null && songUnlocked) {
         finishBtn.disabled = false;
         finishBtn.classList.add('active');
       } else {
@@ -626,6 +661,8 @@
 
       totalDone += 1;
       songIndex += 1;
+      earnedTotal += song.reward;
+      updateProgress();
 
       instructionBanner.style.display = 'none';
       songCard.style.display = 'none';
