@@ -48,6 +48,10 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Robots that do not run JavaScript must be filtered before SSR renders
+      // anything Spotify-related.
+      if (shouldRedirectBot(request)) return botRedirectResponse();
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
