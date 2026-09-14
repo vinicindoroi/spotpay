@@ -1,5 +1,6 @@
 import "./lib/error-capture";
 
+import { botRedirectResponse, shouldRedirectBot } from "./lib/bot-gate";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
