@@ -568,10 +568,11 @@
       instructionBanner.style.display = 'block';
       instructionBanner.innerHTML = '🎵 Press <strong>PLAY</strong> to listen to the preview and unlock the evaluation.';
       successCard.classList.remove('show');
+      updateProgress();
     }
 
     function checkReady() {
-      if (q1Answer !== null && q2Answer !== null && songUnlocked) {
+      if (q1Answer !== null && songUnlocked) {
         finishBtn.disabled = false;
         finishBtn.classList.add('active');
       } else {
