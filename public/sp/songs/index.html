@@ -661,6 +661,8 @@
 
       totalDone += 1;
       songIndex += 1;
+      earnedTotal += song.reward;
+      updateProgress();
 
       instructionBanner.style.display = 'none';
       songCard.style.display = 'none';
