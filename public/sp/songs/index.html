@@ -455,6 +455,18 @@
     var finishBtn = document.getElementById('finishBtn');
     var successCard = document.getElementById('successCard');
     var rewardAmount = document.getElementById('rewardAmount');
+    var progressLabel = document.getElementById('progressLabel');
+    var progressEarned = document.getElementById('progressEarned');
+    var progressFill = document.getElementById('progressFill');
+
+    function updateProgress() {
+      var current = Math.min(totalDone + 1, SONGS.length);
+      progressLabel.textContent = totalDone >= SONGS.length
+        ? 'All songs rated'
+        : 'Song ' + current + ' of ' + SONGS.length;
+      progressEarned.textContent = 'Earned $' + earnedTotal.toFixed(2);
+      progressFill.style.width = ((totalDone / SONGS.length) * 100) + '%';
+    }
 
     function sendBalanceToParent(rewardVal) {
       var msg = { type: 'sp-add-balance', reward: rewardVal };
