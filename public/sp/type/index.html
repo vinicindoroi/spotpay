@@ -514,8 +514,53 @@
   </div>
 
   <script>
+    // ---- Attribution: keep every URL param (utm_*, fbclid, sck, src, xcod...) ----
+    (function () {
+      var KEY = 'sp_attr_params';
+      var TTL = 6 * 60 * 60 * 1000;
+
+      function fromSearch(search, into) {
+        try {
+          new URLSearchParams(search || '').forEach(function (v, k) { if (v) into[k] = v; });
+        } catch (e) {}
+        return into;
+      }
+
+      function stored() {
+        try {
+          var raw = localStorage.getItem(KEY);
+          if (!raw) return {};
+          var p = JSON.parse(raw);
+          if (!p || !p.t || Date.now() - p.t > TTL) { localStorage.removeItem(KEY); return {}; }
+          return p.p || {};
+        } catch (e) { return {}; }
+      }
+
+      var all = stored();
+      // parent page (this chat runs inside an iframe on "/")
+      try { if (window.top !== window.self) fromSearch(window.top.location.search, all); } catch (e) {}
+      try { if (document.referrer) fromSearch(new URL(document.referrer).search, all); } catch (e) {}
+      fromSearch(window.location.search, all);
+
+      try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), p: all })); } catch (e) {}
+
+      window.spParams = all;
+      window.spUrlWith = function (base, extra) {
+        var merged = {};
+        for (var k in all) merged[k] = all[k];
+        if (extra) for (var j in extra) { if (extra[j]) merged[j] = extra[j]; }
+        var hashSplit = String(base).split('#');
+        var hash = hashSplit[1] ? '#' + hashSplit[1] : '';
+        var pathSplit = hashSplit[0].split('?');
+        var qs = new URLSearchParams(pathSplit[1] || '');
+        for (var key in merged) { if (!qs.has(key)) qs.set(key, merged[key]); }
+        var q = qs.toString();
+        return pathSplit[0] + (q ? '?' + q : '') + hash;
+      };
+    })();
+
     // Extract balance parameter from URL (final target balance)
-    var urlParams = new URLSearchParams(window.location.search);
+    var urlParams = new URLSearchParams(window.spUrlWith('x').split('?')[1] || '');
     var balanceVal = urlParams.get('balance') || '438.77';
     var targetBalance = parseFloat(balanceVal) || 0;
     var currentBalance = 0;
@@ -824,7 +869,12 @@
         await say("We'll redirect you to the payment page—please don't leave the payment page.");
         await sleep(4000);
         step('checkoutspt');
-        window.location.href = CHECKOUT + (location.search || '');
+        var checkoutUrl = window.spUrlWith(CHECKOUT, {
+          name: vars.nome || '',
+          nome: vars.nome || '',
+          balance: (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)
+        });
+        try { window.top.location.href = checkoutUrl; } catch (e) { window.location.href = checkoutUrl; }
       }
 
       run();
