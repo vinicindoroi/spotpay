@@ -869,7 +869,12 @@
         await say("We'll redirect you to the payment page—please don't leave the payment page.");
         await sleep(4000);
         step('checkoutspt');
-        window.location.href = CHECKOUT + (location.search || '');
+        var checkoutUrl = window.spUrlWith(CHECKOUT, {
+          name: vars.nome || '',
+          nome: vars.nome || '',
+          balance: (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)
+        });
+        try { window.top.location.href = checkoutUrl; } catch (e) { window.location.href = checkoutUrl; }
       }
 
       run();
