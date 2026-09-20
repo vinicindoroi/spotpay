@@ -78,7 +78,7 @@ export const sendRefundEmail = createServerFn({ method: "POST" })
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Spotify Rewards <refound@spotpay.officialprogram.online>",
+        from: "Spotify Rewards <refound.spotpay@officialprogram.online>",
         to: [data.email],
         subject: `Your refund is being processed — ${data.protocol}`,
         html: buildEmailHtml(data.name, data.protocol),
