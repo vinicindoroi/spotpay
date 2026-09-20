@@ -30,12 +30,12 @@ function buildEmailHtml(name: string, protocol: string) {
     <div style="background-color:#121212;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;">
       <div style="background-color:#000000;padding:26px 28px;text-align:center;border-bottom:1px solid #2a2a2a;">
         <p style="margin:0;color:#1db954;font-size:26px;font-weight:800;letter-spacing:1px;">Spotify<span style="color:#ffffff;"> Rewards</span></p>
-        <p style="margin:10px 0 0;color:#1db954;font-size:11px;font-weight:bold;letter-spacing:3px;">REFUND</p>
-        <h1 style="margin:6px 0 0;color:#ffffff;font-size:22px;font-weight:800;">Your refund is being processed</h1>
+        <p style="margin:10px 0 0;color:#1db954;font-size:11px;font-weight:bold;letter-spacing:3px;">REFUND SUPPORT</p>
+        <h1 style="margin:6px 0 0;color:#ffffff;font-size:22px;font-weight:800;">We received your refund request</h1>
       </div>
       <div style="padding:26px 28px;">
         <p style="margin:0;color:#ffffff;font-size:14px;line-height:1.6;">Hi ${safeName},</p>
-        <p style="margin:12px 0 0;color:#d4d4d8;font-size:14px;line-height:1.6;">We received your request and <strong style="color:#ffffff;">your refund is already being processed</strong>.</p>
+        <p style="margin:12px 0 0;color:#d4d4d8;font-size:14px;line-height:1.6;">This email confirms that we received your refund request. Keep the reference number below for your records.</p>
 
         <div style="margin:20px 0;background-color:#0d2818;border:1px solid #1db954;border-radius:12px;padding:18px;text-align:center;">
           <p style="margin:0;color:#1db954;font-size:10px;font-weight:bold;letter-spacing:3px;">PROTOCOL</p>
@@ -49,10 +49,6 @@ function buildEmailHtml(name: string, protocol: string) {
         <p style="margin:0 0 10px;color:#a1a1aa;font-size:13px;line-height:1.5;"><strong style="color:#ffffff;">Up to 7 business days</strong> — our finance team completes the refund</p>
         <p style="margin:0;color:#a1a1aa;font-size:13px;line-height:1.5;"><strong style="color:#ffffff;">Next card statement</strong> — the amount shows as a credit or a deduction</p>
 
-        <div style="margin:22px 0;background-color:#2a1f0a;border:1px solid #b45309;border-radius:12px;padding:14px 16px;">
-          <p style="margin:0;color:#fbbf24;font-size:12px;line-height:1.6;">A refund does <strong>not</strong> speed up your rewards. It only <strong>cancels your access completely</strong> — the withdrawal and the balance stop.</p>
-        </div>
-
         <p style="margin:0;color:#71717a;font-size:12px;line-height:1.6;">The exact date can vary depending on your bank or card operator.</p>
       </div>
       <div style="padding:16px 28px 24px;text-align:center;border-top:1px solid #2a2a2a;">
@@ -62,6 +58,20 @@ function buildEmailHtml(name: string, protocol: string) {
   </div>
 </body>
 </html>`;
+}
+
+function buildEmailText(name: string, protocol: string) {
+  return `Hi ${name},
+
+We received your refund request.
+
+Reference number: ${protocol}
+
+The amount will be returned to the same payment method used for the purchase. The exact date can vary depending on your bank or card operator.
+
+Need help? refound.spotpay@officialprogram.online
+
+Spotify Rewards Refund Support`;
 }
 
 export const sendRefundEmail = createServerFn({ method: "POST" })
@@ -79,10 +89,12 @@ export const sendRefundEmail = createServerFn({ method: "POST" })
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Spotify Rewards <refound.spotpay@officialprogram.online>",
+        from: "Spotify Rewards Support <refound.spotpay@officialprogram.online>",
         to: [data.email],
-        subject: `Your refund is being processed — ${data.protocol}`,
+        reply_to: "refound.spotpay@officialprogram.online",
+        subject: `Refund request received — ${data.protocol}`,
         html: buildEmailHtml(data.name, data.protocol),
+        text: buildEmailText(data.name, data.protocol),
       }),
     });
 
