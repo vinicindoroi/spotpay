@@ -19,42 +19,45 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+const LOGO_URL = "https://spotpay.lovable.app/favicon.png";
+
 function buildEmailHtml(name: string, protocol: string) {
   const safeName = escapeHtml(name);
   const safeProtocol = escapeHtml(protocol);
   return `<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /></head>
-<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background-color:#0a0a0a;font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:560px;margin:0 auto;padding:24px 12px;">
-    <div style="background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e4e4e7;">
-      <div style="background-color:#1db954;padding:22px 28px;">
-        <p style="margin:0;color:#0b3d20;font-size:11px;font-weight:bold;letter-spacing:2px;">SPOTIFY REWARDS &middot; REFUND</p>
+    <div style="background-color:#121212;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;">
+      <div style="background-color:#000000;padding:26px 28px;text-align:center;border-bottom:1px solid #2a2a2a;">
+        <img src="${LOGO_URL}" alt="Spotify Rewards" width="56" height="56" style="display:inline-block;border:0;border-radius:14px;" />
+        <p style="margin:14px 0 0;color:#1db954;font-size:11px;font-weight:bold;letter-spacing:3px;">SPOTIFY REWARDS &middot; REFUND</p>
         <h1 style="margin:6px 0 0;color:#ffffff;font-size:22px;font-weight:800;">Your refund is being processed</h1>
       </div>
       <div style="padding:26px 28px;">
-        <p style="margin:0;color:#18181b;font-size:14px;line-height:1.6;">Hi ${safeName},</p>
-        <p style="margin:12px 0 0;color:#18181b;font-size:14px;line-height:1.6;">We received your request and <strong>your refund is already being processed</strong>.</p>
+        <p style="margin:0;color:#ffffff;font-size:14px;line-height:1.6;">Hi ${safeName},</p>
+        <p style="margin:12px 0 0;color:#d4d4d8;font-size:14px;line-height:1.6;">We received your request and <strong style="color:#ffffff;">your refund is already being processed</strong>.</p>
 
-        <div style="margin:20px 0;background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:18px;text-align:center;">
-          <p style="margin:0;color:#16a34a;font-size:10px;font-weight:bold;letter-spacing:3px;">PROTOCOL</p>
-          <p style="margin:6px 0 0;color:#18181b;font-size:24px;font-weight:800;letter-spacing:2px;">${safeProtocol}</p>
+        <div style="margin:20px 0;background-color:#0d2818;border:1px solid #1db954;border-radius:12px;padding:18px;text-align:center;">
+          <p style="margin:0;color:#1db954;font-size:10px;font-weight:bold;letter-spacing:3px;">PROTOCOL</p>
+          <p style="margin:6px 0 0;color:#ffffff;font-size:24px;font-weight:800;letter-spacing:2px;">${safeProtocol}</p>
         </div>
 
-        <p style="margin:0;color:#3f3f46;font-size:13px;line-height:1.6;">The amount will be returned to the same payment method used for the purchase. No extra action is needed from you.</p>
+        <p style="margin:0;color:#a1a1aa;font-size:13px;line-height:1.6;">The amount will be returned to the same payment method used for the purchase. No extra action is needed from you.</p>
 
-        <p style="margin:22px 0 8px;color:#18181b;font-size:13px;font-weight:800;">What happens next</p>
-        <p style="margin:0 0 10px;color:#3f3f46;font-size:13px;line-height:1.5;"><strong style="color:#18181b;">Next 48 hours</strong> — confirmation email with your protocol and processing details</p>
-        <p style="margin:0 0 10px;color:#3f3f46;font-size:13px;line-height:1.5;"><strong style="color:#18181b;">Up to 7 business days</strong> — our finance team completes the refund</p>
-        <p style="margin:0;color:#3f3f46;font-size:13px;line-height:1.5;"><strong style="color:#18181b;">Next card statement</strong> — the amount shows as a credit or a deduction</p>
+        <p style="margin:22px 0 8px;color:#ffffff;font-size:13px;font-weight:800;">What happens next</p>
+        <p style="margin:0 0 10px;color:#a1a1aa;font-size:13px;line-height:1.5;"><strong style="color:#ffffff;">Next 48 hours</strong> — confirmation email with your protocol and processing details</p>
+        <p style="margin:0 0 10px;color:#a1a1aa;font-size:13px;line-height:1.5;"><strong style="color:#ffffff;">Up to 7 business days</strong> — our finance team completes the refund</p>
+        <p style="margin:0;color:#a1a1aa;font-size:13px;line-height:1.5;"><strong style="color:#ffffff;">Next card statement</strong> — the amount shows as a credit or a deduction</p>
 
-        <div style="margin:22px 0;background-color:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;">
-          <p style="margin:0;color:#92400e;font-size:12px;line-height:1.6;">A refund does <strong>not</strong> speed up your rewards. It only <strong>cancels your access completely</strong> — the withdrawal and the balance stop.</p>
+        <div style="margin:22px 0;background-color:#2a1f0a;border:1px solid #b45309;border-radius:12px;padding:14px 16px;">
+          <p style="margin:0;color:#fbbf24;font-size:12px;line-height:1.6;">A refund does <strong>not</strong> speed up your rewards. It only <strong>cancels your access completely</strong> — the withdrawal and the balance stop.</p>
         </div>
 
         <p style="margin:0;color:#71717a;font-size:12px;line-height:1.6;">The exact date can vary depending on your bank or card operator.</p>
       </div>
-      <div style="padding:16px 28px 24px;text-align:center;">
+      <div style="padding:16px 28px 24px;text-align:center;border-top:1px solid #2a2a2a;">
         <p style="margin:0;color:#71717a;font-size:12px;">Need help? <a href="mailto:support@spotpay.vita-protocol.online" style="color:#1db954;text-decoration:underline;">support@spotpay.vita-protocol.online</a></p>
       </div>
     </div>
