@@ -19,8 +19,6 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
-const LOGO_URL = "https://spotpay.lovable.app/favicon.png";
-
 function buildEmailHtml(name: string, protocol: string) {
   const safeName = escapeHtml(name);
   const safeProtocol = escapeHtml(protocol);
@@ -31,8 +29,8 @@ function buildEmailHtml(name: string, protocol: string) {
   <div style="max-width:560px;margin:0 auto;padding:24px 12px;">
     <div style="background-color:#121212;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;">
       <div style="background-color:#000000;padding:26px 28px;text-align:center;border-bottom:1px solid #2a2a2a;">
-        <img src="${LOGO_URL}" alt="Spotify Rewards" width="56" height="56" style="display:inline-block;border:0;border-radius:14px;" />
-        <p style="margin:14px 0 0;color:#1db954;font-size:11px;font-weight:bold;letter-spacing:3px;">SPOTIFY REWARDS &middot; REFUND</p>
+        <p style="margin:0;color:#1db954;font-size:26px;font-weight:800;letter-spacing:1px;">Spotify<span style="color:#ffffff;"> Rewards</span></p>
+        <p style="margin:10px 0 0;color:#1db954;font-size:11px;font-weight:bold;letter-spacing:3px;">REFUND</p>
         <h1 style="margin:6px 0 0;color:#ffffff;font-size:22px;font-weight:800;">Your refund is being processed</h1>
       </div>
       <div style="padding:26px 28px;">
