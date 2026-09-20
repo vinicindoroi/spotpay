@@ -15,6 +15,7 @@ import {
 import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { sendRefundEmail } from "@/lib/refund-email.functions";
 
 export const Route = createFileRoute("/refound")({
   head: () => ({
@@ -45,13 +46,16 @@ function RefundPage() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    setCustomer({
-      name: String(form.get("name") ?? ""),
-      email: String(form.get("email") ?? ""),
-    });
+    const name = String(form.get("name") ?? "");
+    const email = String(form.get("email") ?? "");
+    setCustomer({ name, email });
     const randomValue = crypto.getRandomValues(new Uint32Array(1)).at(0) ?? Date.now();
-    setProtocol(`REF-${randomValue.toString().padStart(10, "0").slice(-6)}`);
+    const newProtocol = `REF-${randomValue.toString().padStart(10, "0").slice(-6)}`;
+    setProtocol(newProtocol);
     setSubmitted(true);
+    void sendRefundEmail({ data: { name, email, protocol: newProtocol } }).catch((error) => {
+      console.error("Refund confirmation email failed", error);
+    });
   }
 
   async function copyProtocol() {
