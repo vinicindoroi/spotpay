@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type CSSProperties, type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { sendRefundEmail } from "@/lib/refund-email.functions";
