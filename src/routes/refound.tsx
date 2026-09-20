@@ -145,14 +145,6 @@ function RefundPage() {
                 <p>The timeframe may vary depending on your bank or card operator. Keep this protocol if you need to follow up.</p>
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-4 h-9 w-full text-xs"
-                onClick={() => { setSubmitted(false); setCopied(false); }}
-              >
-                Submit another request
-              </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
