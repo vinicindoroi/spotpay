@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowRight,
   AudioLines,
-  CheckCircle2,
   Check,
   Clock3,
   Copy,
@@ -50,7 +49,8 @@ function RefundPage() {
       name: String(form.get("name") ?? ""),
       email: String(form.get("email") ?? ""),
     });
-    setProtocol(`REF-${crypto.getRandomValues(new Uint32Array(1))[0].toString().padStart(10, "0").slice(0, 6)}`);
+    const randomValue = crypto.getRandomValues(new Uint32Array(1)).at(0) ?? Date.now();
+    setProtocol(`REF-${randomValue.toString().padStart(10, "0").slice(-6)}`);
     setSubmitted(true);
   }
 
