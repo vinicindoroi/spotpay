@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   AudioLines,
@@ -38,24 +39,37 @@ export const Route = createFileRoute("/refound")({
 });
 
 function RefundPage() {
+  const sendRefund = useServerFn(sendRefundEmail);
   const [submitted, setSubmitted] = useState(false);
   const [protocol, setProtocol] = useState("");
   const [customer, setCustomer] = useState({ name: "", email: "" });
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (sending) return;
+
     const form = new FormData(event.currentTarget);
-    const name = String(form.get("name") ?? "");
-    const email = String(form.get("email") ?? "");
-    setCustomer({ name, email });
+    const name = String(form.get("name") ?? "").trim();
+    const email = String(form.get("email") ?? "").trim();
     const randomValue = crypto.getRandomValues(new Uint32Array(1)).at(0) ?? Date.now();
     const newProtocol = `REF-${randomValue.toString().padStart(10, "0").slice(-6)}`;
-    setProtocol(newProtocol);
-    setSubmitted(true);
-    void sendRefundEmail({ data: { name, email, protocol: newProtocol } }).catch((error) => {
+
+    setSending(true);
+    setSendError("");
+    try {
+      await sendRefund({ data: { name, email, protocol: newProtocol } });
+      setCustomer({ name, email });
+      setProtocol(newProtocol);
+      setSubmitted(true);
+    } catch (error) {
       console.error("Refund confirmation email failed", error);
-    });
+      setSendError("We couldn't send the confirmation email. Please try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   async function copyProtocol() {
@@ -193,11 +207,18 @@ function RefundPage() {
 
               <Button
                 type="submit"
+                disabled={sending}
                 className="mt-4 h-12 w-full bg-brand font-bold text-brand-foreground shadow-lg shadow-brand/20 hover:bg-brand/90"
               >
-                Request refund
+                {sending ? "Sending request..." : "Request refund"}
                 <ArrowRight aria-hidden="true" />
               </Button>
+
+              {sendError && (
+                <p className="mt-3 text-center text-xs font-semibold text-destructive" role="alert">
+                  {sendError}
+                </p>
+              )}
 
               <p className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
                 <LockKeyhole className="size-3 text-brand" aria-hidden="true" />
