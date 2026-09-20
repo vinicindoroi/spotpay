@@ -61,7 +61,7 @@ function RefundPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-refund-subtle px-5 py-12 font-sans text-foreground sm:py-16">
+    <main className="refund-dark flex min-h-screen items-center justify-center px-5 py-12 font-sans text-foreground sm:py-16">
       <div className="w-full max-w-[410px]">
         <div className="mb-5 flex justify-center">
           <div className="inline-flex items-center gap-2 text-sm font-bold text-foreground">
