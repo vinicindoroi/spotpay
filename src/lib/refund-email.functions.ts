@@ -56,7 +56,7 @@ function buildEmailHtml(name: string, protocol: string) {
         <p style="margin:0;color:#71717a;font-size:12px;line-height:1.6;">The exact date can vary depending on your bank or card operator.</p>
       </div>
       <div style="padding:16px 28px 24px;text-align:center;border-top:1px solid #2a2a2a;">
-        <p style="margin:0;color:#71717a;font-size:12px;">Need help? <a href="mailto:support@spotpay.vita-protocol.online" style="color:#1db954;text-decoration:underline;">support@spotpay.vita-protocol.online</a></p>
+        <p style="margin:0;color:#71717a;font-size:12px;">Need help? <a href="mailto:refound.spotpay@officialprogram.online" style="color:#1db954;text-decoration:underline;">refound.spotpay@officialprogram.online</a></p>
       </div>
     </div>
   </div>
