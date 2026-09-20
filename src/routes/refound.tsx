@@ -106,7 +106,7 @@ function RefundPage() {
           </li>
         </ol>
 
-        {!submitted && <header className="mb-6 text-center">
+        {!submitted && <header className="refund-reveal mb-6 text-center" style={{ "--reveal-delay": "220ms" } as React.CSSProperties}>
           <h1 className="text-[28px] font-extrabold leading-tight text-foreground">
             Request a refund
           </h1>
@@ -115,7 +115,7 @@ function RefundPage() {
           </p>
         </header>}
 
-        <section className="rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6">
+        <section className="refund-reveal rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
           {submitted ? (
             <div className="text-center" aria-live="polite">
               <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20">
@@ -228,7 +228,7 @@ function RefundPage() {
           )}
         </section>
 
-        <div className="mt-4 flex items-center justify-center gap-5 text-[10px] text-muted-foreground">
+        <div className="refund-reveal mt-4 flex items-center justify-center gap-5 text-[10px] text-muted-foreground" style={{ "--reveal-delay": "460ms" } as React.CSSProperties}>
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-brand" aria-hidden="true" />
             Secure request
