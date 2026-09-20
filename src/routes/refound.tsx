@@ -117,8 +117,8 @@ function RefundPage() {
 
         <section className="refund-reveal rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
           {submitted ? (
-            <div className="text-center" aria-live="polite">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20">
+            <div className="refund-reveal text-center" aria-live="polite">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20 animate-scale-in">
                 <Check className="size-7" strokeWidth={3} aria-hidden="true" />
               </span>
               <h1 className="mt-4 text-xl font-extrabold">Request submitted</h1>
