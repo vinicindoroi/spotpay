@@ -81,7 +81,7 @@ function RefundPage() {
   return (
     <main className="refund-dark flex min-h-screen items-center justify-center px-5 py-12 font-sans text-foreground sm:py-16">
       <div className="w-full max-w-[410px]">
-        <div className="mb-5 flex justify-center">
+        <div className="refund-reveal mb-5 flex justify-center" style={{ "--reveal-delay": "0ms" } as React.CSSProperties}>
           <div className="inline-flex items-center gap-2 text-sm font-bold text-foreground">
             <span className="flex size-7 items-center justify-center rounded-full bg-brand text-brand-foreground">
               <AudioLines className="size-4" aria-hidden="true" />
@@ -90,7 +90,7 @@ function RefundPage() {
           </div>
         </div>
 
-        <ol className="mx-auto mb-4 flex max-w-[230px] items-center text-[11px] font-semibold">
+        <ol className="refund-reveal mx-auto mb-4 flex max-w-[230px] items-center text-[11px] font-semibold" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
           <li className={`flex items-center gap-1.5 ${submitted ? "text-brand" : "text-brand-soft-foreground"}`}>
             <span className="flex size-5 items-center justify-center rounded-full bg-brand text-[10px] text-brand-foreground">
               {submitted ? <Check className="size-3" aria-hidden="true" /> : "1"}
