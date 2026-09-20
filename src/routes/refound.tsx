@@ -2,11 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowRight,
   AudioLines,
+  CheckCircle2,
   Check,
+  Clock3,
+  Copy,
   CreditCard,
   Info,
   LockKeyhole,
+  Mail,
   ShieldCheck,
+  Zap,
 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
@@ -34,10 +39,25 @@ export const Route = createFileRoute("/refound")({
 
 function RefundPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [protocol, setProtocol] = useState("");
+  const [customer, setCustomer] = useState({ name: "", email: "" });
+  const [copied, setCopied] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setCustomer({
+      name: String(form.get("name") ?? ""),
+      email: String(form.get("email") ?? ""),
+    });
+    setProtocol(`REF-${crypto.getRandomValues(new Uint32Array(1))[0].toString().padStart(10, "0").slice(0, 6)}`);
     setSubmitted(true);
+  }
+
+  async function copyProtocol() {
+    await navigator.clipboard.writeText(protocol);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
   }
 
   return (
@@ -68,32 +88,68 @@ function RefundPage() {
           </li>
         </ol>
 
-        <header className="mb-6 text-center">
+        {!submitted && <header className="mb-6 text-center">
           <h1 className="text-[28px] font-extrabold leading-tight text-foreground">
-            {submitted ? "Request received" : "Request a refund"}
+            Request a refund
           </h1>
           <p className="mx-auto mt-2 max-w-[350px] text-sm leading-5 text-muted-foreground">
-            {submitted
-              ? "We received your request and will send updates to your purchase email."
-              : "Use the same name and email from your purchase. We start processing as soon as you submit."}
+            Use the same name and email from your purchase. We start processing as soon as you submit.
           </p>
-        </header>
+        </header>}
 
         <section className="rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6">
           {submitted ? (
-            <div className="py-4 text-center" aria-live="polite">
-              <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand-soft-foreground">
-                <ShieldCheck className="size-8" aria-hidden="true" />
+            <div className="text-center" aria-live="polite">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20">
+                <Check className="size-7" strokeWidth={3} aria-hidden="true" />
               </span>
-              <h2 className="mt-5 text-lg font-bold">Refund review started</h2>
-              <p className="mt-2 text-sm leading-5 text-muted-foreground">
-                Your request is now in review. Keep an eye on your inbox for confirmation.
+              <h1 className="mt-4 text-xl font-extrabold">Request submitted</h1>
+              <p className="mx-auto mt-1.5 max-w-[320px] text-xs leading-5 text-muted-foreground">
+                Your refund is already being processed. We just sent a confirmation to your purchase email.
               </p>
+
+              <div className="mt-4 rounded-lg border border-brand/20 bg-brand-soft px-4 py-3">
+                <p className="text-[9px] font-extrabold uppercase text-brand-soft-foreground">Protocol number</p>
+                <p className="mt-0.5 text-xl font-black tracking-wide text-foreground">{protocol}</p>
+                <Button type="button" variant="outline" size="sm" className="mt-1 h-7 gap-1.5 px-2.5 text-[10px]" onClick={copyProtocol}>
+                  {copied ? <Check className="size-3" aria-hidden="true" /> : <Copy className="size-3" aria-hidden="true" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+              </div>
+
+              <div className="mt-3 rounded-lg bg-refund-field p-3 text-left text-[11px] leading-5 text-muted-foreground">
+                <p><strong className="text-foreground">Name:</strong> {customer.name}</p>
+                <p><strong className="text-foreground">Email:</strong> {customer.email}</p>
+              </div>
+
+              <div className="mt-3 text-left">
+                <h2 className="text-xs font-extrabold">How will you receive the refund?</h2>
+                <div className="mt-2 space-y-2.5">
+                  <div className="flex gap-2.5">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand-soft-foreground"><Mail className="size-3.5" aria-hidden="true" /></span>
+                    <div><p className="text-[11px] font-bold">Next 24 hours</p><p className="text-[9px] leading-4 text-muted-foreground">Confirmation email with processing details — already on its way</p></div>
+                  </div>
+                  <div className="flex gap-2.5">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand-soft-foreground"><Zap className="size-3.5" aria-hidden="true" /></span>
+                    <div><p className="text-[11px] font-bold">Up to 7 business days</p><p className="text-[9px] leading-4 text-muted-foreground">Refund processed by our finance team</p></div>
+                  </div>
+                  <div className="flex gap-2.5">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand-soft-foreground"><CreditCard className="size-3.5" aria-hidden="true" /></span>
+                    <div><p className="text-[11px] font-bold">Next card statement</p><p className="text-[9px] leading-4 text-muted-foreground">Amount appears as a credit or deducted from the total</p></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-2 rounded-lg border border-warning/30 bg-warning/10 p-2.5 text-left text-[9px] leading-4 text-muted-foreground">
+                <Clock3 className="mt-0.5 size-3.5 shrink-0 text-warning-foreground" aria-hidden="true" />
+                <p>The timeframe may vary depending on your bank or card operator. Keep this protocol if you need to follow up.</p>
+              </div>
+
               <Button
                 type="button"
                 variant="outline"
-                className="mt-6 h-11 w-full"
-                onClick={() => setSubmitted(false)}
+                className="mt-4 h-9 w-full text-xs"
+                onClick={() => { setSubmitted(false); setCopied(false); }}
               >
                 Submit another request
               </Button>
