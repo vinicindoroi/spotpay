@@ -225,42 +225,45 @@
 
       var WORKER_URL = 'https://spotpay-v2.vinicio-bdf.workers.dev/api/stripe-charge-upsell';
 
-      // Single source of truth: the loading screen reads this value, so it never falls out of sync.
-      var UPSELL_DELAY_MS = 20000;
-      var UPSELL_REDIRECT_AT_MS = UPSELL_DELAY_MS - 1000;
-
+      // Sem delay! A função dispara na hora que o cliente clica.
       function chargeUpsell(email, onOk, onErr) {
-        var p = window.spUpsellParams || {};
-        var cid = p.cid || '';
-        var pm = p.pm || '';
+        // 1. Pega os dados EXATAMENTE da URL, que é por onde o Worker envia
+        var urlParams = new URLSearchParams(window.location.search);
+        var saved = window.spUpsellParams || {};
+        var cid = urlParams.get('cid') || saved.cid || '';
+        var pm = urlParams.get('pm') || saved.pm || '';
+        var emailParam = urlParams.get('email') || saved.email || '';
+        var name = urlParams.get('name') || saved.name || '';
 
+        // Se não tem cartão na URL, dá erro
         if (!cid || !pm) {
-          onErr('Warning: payment information not found in URL.');
+          onErr('Erro: Informações de pagamento perdidas. Tente novamente.');
           return;
         }
 
-        var urlParams = new URLSearchParams(window.location.search);
-
-        // ANTIFRAUD DELAY: waits UPSELL_DELAY_MS before sending to Stripe
-        setTimeout(function () {
-          fetch(WORKER_URL + window.location.search, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              customer_id: cid,
-              payment_method_id: pm,
-              upsell_number: 1,
-              email: email,
-              extra_params: Object.fromEntries(urlParams.entries())
-            })
+        // 2. Dispara a cobrança instantaneamente
+        fetch(WORKER_URL + window.location.search, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_id: cid,
+            payment_method_id: pm,
+            upsell_number: 1, // Avisa o Worker que é a assinatura de $3.99
+            email: email || emailParam,
+            name: name,
+            extra_params: Object.fromEntries(urlParams.entries())
           })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-              if (data && data.ok && data.next_url) onOk(data.next_url);
-              else onErr((data && data.error) || 'Payment declined. Please try again.');
-            })
-            .catch(function () { onErr('Connection failed. Check your internet and try again.'); });
-        }, UPSELL_DELAY_MS);
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            // Se der sucesso, o próprio worker devolve a URL do Up2
+            if (data && data.ok && data.next_url) {
+              onOk(data.next_url);
+            } else {
+              onErr((data && data.error) || 'Pagamento recusado pelo banco. Tente novamente.');
+            }
+          })
+          .catch(function () { onErr('Falha de conexão. Verifique sua internet.'); });
       }
 
 
