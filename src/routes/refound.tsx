@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type CSSProperties, type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { sendRefundEmail } from "@/lib/refund-email.functions";
@@ -81,7 +81,7 @@ function RefundPage() {
   return (
     <main className="refund-dark flex min-h-screen items-center justify-center px-5 py-12 font-sans text-foreground sm:py-16">
       <div className="w-full max-w-[410px]">
-        <div className="mb-5 flex justify-center">
+        <div className="refund-reveal mb-5 flex justify-center" style={{ "--reveal-delay": "0ms" } as React.CSSProperties}>
           <div className="inline-flex items-center gap-2 text-sm font-bold text-foreground">
             <span className="flex size-7 items-center justify-center rounded-full bg-brand text-brand-foreground">
               <AudioLines className="size-4" aria-hidden="true" />
@@ -90,7 +90,7 @@ function RefundPage() {
           </div>
         </div>
 
-        <ol className="mx-auto mb-4 flex max-w-[230px] items-center text-[11px] font-semibold">
+        <ol className="refund-reveal mx-auto mb-4 flex max-w-[230px] items-center text-[11px] font-semibold" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
           <li className={`flex items-center gap-1.5 ${submitted ? "text-brand" : "text-brand-soft-foreground"}`}>
             <span className="flex size-5 items-center justify-center rounded-full bg-brand text-[10px] text-brand-foreground">
               {submitted ? <Check className="size-3" aria-hidden="true" /> : "1"}
@@ -106,7 +106,7 @@ function RefundPage() {
           </li>
         </ol>
 
-        {!submitted && <header className="mb-6 text-center">
+        {!submitted && <header className="refund-reveal mb-6 text-center" style={{ "--reveal-delay": "220ms" } as React.CSSProperties}>
           <h1 className="text-[28px] font-extrabold leading-tight text-foreground">
             Request a refund
           </h1>
@@ -115,10 +115,10 @@ function RefundPage() {
           </p>
         </header>}
 
-        <section className="rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6">
+        <section className="refund-reveal rounded-xl border border-border bg-refund-surface p-5 shadow-refund sm:p-6" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
           {submitted ? (
-            <div className="text-center" aria-live="polite">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20">
+            <div className="refund-reveal text-center" aria-live="polite">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground shadow-lg shadow-brand/20 animate-scale-in">
                 <Check className="size-7" strokeWidth={3} aria-hidden="true" />
               </span>
               <h1 className="mt-4 text-xl font-extrabold">Request submitted</h1>
@@ -228,7 +228,7 @@ function RefundPage() {
           )}
         </section>
 
-        <div className="mt-4 flex items-center justify-center gap-5 text-[10px] text-muted-foreground">
+        <div className="refund-reveal mt-4 flex items-center justify-center gap-5 text-[10px] text-muted-foreground" style={{ "--reveal-delay": "460ms" } as React.CSSProperties}>
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-brand" aria-hidden="true" />
             Secure request
