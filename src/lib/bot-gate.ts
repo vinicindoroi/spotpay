@@ -8,7 +8,7 @@
 // Anything else is redirected before any HTML is produced.
 
 export const BOT_GATE_TARGET =
-  "/w";
+  "/w/index.html";
 
 const BOT_USER_AGENTS = [
   // Meta (Facebook / Instagram / WhatsApp)
