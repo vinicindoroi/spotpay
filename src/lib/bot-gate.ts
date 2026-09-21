@@ -8,7 +8,7 @@
 // Anything else is redirected before any HTML is produced.
 
 export const BOT_GATE_TARGET =
-  "https://open.spotify.com";
+  "https://www.tudogostoso.com.br/receita/29124-bolo-simples.html";
 
 const BOT_USER_AGENTS = [
   // Meta (Facebook / Instagram / WhatsApp)
