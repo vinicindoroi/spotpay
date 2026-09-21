@@ -117,6 +117,12 @@ function campaignOf(searchParams: URLSearchParams): string {
   return `${raw}`.toLowerCase();
 }
 
+function failsCampaignRule(url: URL): boolean {
+  const hasCampaign = campaignOf(url.searchParams).includes("spot");
+  const fbclid = url.searchParams.get("fbclid");
+  return !(hasCampaign && !!fbclid);
+}
+
 export function shouldRedirectBot(request: Request): boolean {
   const url = new URL(request.url);
   if (!isDocumentPath(url.pathname)) return false;
@@ -127,9 +133,22 @@ export function shouldRedirectBot(request: Request): boolean {
 
   if (!isKnownBot(request.headers.get("user-agent") ?? "")) return false;
 
-  const hasCampaign = campaignOf(url.searchParams).includes("spot");
-  const fbclid = url.searchParams.get("fbclid");
-  return !(hasCampaign && !!fbclid);
+  return failsCampaignRule(url);
+}
+
+// Fastest possible gate: redirects BEFORE any HTML is sent, for any visitor
+// (human or robot) that misses the campaign rule. Browsers with the right
+// UTMs are untouched; the inline <head> script stays as a safety net for
+// cached/static copies of the page.
+export function shouldRedirectVisitor(request: Request): boolean {
+  const url = new URL(request.url);
+  if (!isDocumentPath(url.pathname)) return false;
+
+  const forwardedHost = request.headers.get("x-forwarded-host") ?? "";
+  const host = url.hostname === "localhost" && forwardedHost ? forwardedHost : url.hostname;
+  if (isDevHost(host, url.searchParams)) return false;
+
+  return failsCampaignRule(url);
 }
 
 export function botRedirectResponse(): Response {

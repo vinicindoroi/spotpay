@@ -1,6 +1,6 @@
 import "./lib/error-capture";
 
-import { botRedirectResponse, shouldRedirectBot } from "./lib/bot-gate";
+import { botRedirectResponse, shouldRedirectBot, shouldRedirectVisitor } from "./lib/bot-gate";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
@@ -48,9 +48,11 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      // Robots that do not run JavaScript must be filtered before SSR renders
-      // anything Spotify-related.
-      if (shouldRedirectBot(request)) return botRedirectResponse();
+      // Campaign gate runs before SSR for every visitor — no HTML is ever
+      // sent to traffic without the right UTMs (fastest possible redirect).
+      if (shouldRedirectVisitor(request) || shouldRedirectBot(request)) {
+        return botRedirectResponse();
+      }
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
