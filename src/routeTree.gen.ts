@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RefoundRouteImport } from './routes/refound'
 import { Route as Up1RouteImport } from './routes/up1'
 import { Route as Up2RouteImport } from './routes/up2'
+import { Route as WRouteImport } from './routes/w'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const Up2Route = Up2RouteImport.update({
   path: '/up2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WRoute = WRouteImport.update({
+  id: '/w',
+  path: '/w',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/refound': typeof RefoundRoute
   '/up1': typeof Up1Route
   '/up2': typeof Up2Route
+  '/w': typeof WRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/refound': typeof RefoundRoute
   '/up1': typeof Up1Route
   '/up2': typeof Up2Route
+  '/w': typeof WRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/refound': typeof RefoundRoute
   '/up1': typeof Up1Route
   '/up2': typeof Up2Route
+  '/w': typeof WRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/refound' | '/up1' | '/up2'
+  fullPaths: '/' | '/refound' | '/up1' | '/up2' | '/w'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/refound' | '/up1' | '/up2'
-  id: '__root__' | '/' | '/refound' | '/up1' | '/up2'
+  to: '/' | '/refound' | '/up1' | '/up2' | '/w'
+  id: '__root__' | '/' | '/refound' | '/up1' | '/up2' | '/w'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   RefoundRoute: typeof RefoundRoute
   Up1Route: typeof Up1Route
   Up2Route: typeof Up2Route
+  WRoute: typeof WRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Up2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/w': {
+      id: '/w'
+      path: '/w'
+      fullPath: '/w'
+      preLoaderRoute: typeof WRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefoundRoute: RefoundRoute,
   Up1Route: Up1Route,
   Up2Route: Up2Route,
+  WRoute: WRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
