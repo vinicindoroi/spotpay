@@ -330,6 +330,33 @@
       height: 100%; width: 0%; border-radius: 99px; background: #1DB954;
       box-shadow: 0 0 10px rgba(29,185,84,.6); transition: width .5s ease;
     }
+
+    @keyframes earned-bump {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.25); color: #1ed760; }
+      100% { transform: scale(1); }
+    }
+    .progress-earned.bump { animation: earned-bump .45s ease; }
+    .progress-earned { display: inline-block; transition: color .3s; }
+
+    .earn-float {
+      position: absolute;
+      right: 4px;
+      top: -6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1ed760;
+      text-shadow: 0 0 8px rgba(29,185,84,.8);
+      animation: float-up 1s ease-out forwards;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    @keyframes float-up {
+      from { opacity: 0; transform: translateY(6px); }
+      25% { opacity: 1; }
+      to { opacity: 0; transform: translateY(-18px); }
+    }
+    .progress-top { position: relative; }
   </style>
 </head>
 <body>
@@ -468,6 +495,18 @@
         : 'Song ' + current + ' of ' + SONGS.length;
       progressEarned.textContent = 'Earned $' + earnedTotal.toFixed(2);
       progressFill.style.width = ((totalDone / SONGS.length) * 100) + '%';
+    }
+
+    function celebrateReward(rewardVal) {
+      try { if (navigator.vibrate) navigator.vibrate(80); } catch(e){}
+      var f = document.createElement('span');
+      f.className = 'earn-float';
+      f.textContent = '+$' + rewardVal.toFixed(2);
+      progressEarned.parentElement.appendChild(f);
+      setTimeout(function(){ try { f.remove(); } catch(e){} }, 1100);
+      progressEarned.classList.remove('bump');
+      void progressEarned.offsetWidth;
+      progressEarned.classList.add('bump');
     }
 
     function sendBalanceToParent(rewardVal) {
@@ -630,6 +669,21 @@
         isPlaying = false;
         setPlayIcon(false);
       } else {
+        // Fallback: se o áudio não carregar em 3s, libera a avaliação mesmo assim
+        var clickedAt = Date.now();
+        setTimeout(function() {
+          if (songUnlocked) return;
+          if (!audioEl || audioEl.error || (isPlaying && audioEl.currentTime < 0.5)) {
+            if (Date.now() - clickedAt >= 2800) {
+              try { if (audioEl) audioEl.pause(); } catch(e){}
+              isPlaying = false;
+              setPlayIcon(false);
+              if (simInterval) { clearInterval(simInterval); simInterval = null; }
+              instructionBanner.innerHTML = '🎉 Preview unlocked! Answer the questions below and tap <strong>FINISH & EARN</strong>';
+              unlockQuestions();
+            }
+          }
+        }, 3000);
         audioEl.play().then(function() {
           isPlaying = true;
           setPlayIcon(true);
@@ -665,6 +719,7 @@
       songIndex += 1;
       earnedTotal += song.reward;
       updateProgress();
+      celebrateReward(song.reward);
 
       instructionBanner.style.display = 'none';
       songCard.style.display = 'none';
@@ -677,6 +732,7 @@
       setTimeout(function() {
         if (totalDone < SONGS.length) {
           loadSong();
+          togglePlay(); // autoplay da próxima música
         } else {
           notifyCompletionToTypebot();
           successCard.style.display = 'none';
@@ -690,7 +746,7 @@
           instructionBanner.style.padding = '16px';
           instructionBanner.innerHTML = '🎉 <strong style="font-size:15px; margin-bottom:4px;">Daily Limit Reached!</strong>Continue in the chat below to withdraw your <strong>$438.77</strong>.';
         }
-      }, 1800);
+      }, 800);
     });
 
     loadSong();
