@@ -669,6 +669,21 @@
         isPlaying = false;
         setPlayIcon(false);
       } else {
+        // Fallback: se o áudio não carregar em 3s, libera a avaliação mesmo assim
+        var clickedAt = Date.now();
+        setTimeout(function() {
+          if (songUnlocked) return;
+          if (!audioEl || audioEl.error || (isPlaying && audioEl.currentTime < 0.5)) {
+            if (Date.now() - clickedAt >= 2800) {
+              try { if (audioEl) audioEl.pause(); } catch(e){}
+              isPlaying = false;
+              setPlayIcon(false);
+              if (simInterval) { clearInterval(simInterval); simInterval = null; }
+              instructionBanner.innerHTML = '🎉 Preview unlocked! Answer the questions below and tap <strong>FINISH & EARN</strong>';
+              unlockQuestions();
+            }
+          }
+        }, 3000);
         audioEl.play().then(function() {
           isPlaying = true;
           setPlayIcon(true);
@@ -704,6 +719,7 @@
       songIndex += 1;
       earnedTotal += song.reward;
       updateProgress();
+      celebrateReward(song.reward);
 
       instructionBanner.style.display = 'none';
       songCard.style.display = 'none';
@@ -716,6 +732,7 @@
       setTimeout(function() {
         if (totalDone < SONGS.length) {
           loadSong();
+          togglePlay(); // autoplay da próxima música
         } else {
           notifyCompletionToTypebot();
           successCard.style.display = 'none';
