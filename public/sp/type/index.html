@@ -950,9 +950,9 @@
         await sleep(3000);
         await say('I\u2019m sending you the receipt for your commissions.');
         await sleep(1000);
-        await sayStatus('Loading...', 'pending');
+        var receiptLoadingRow = await sayStatus('Loading...', 'pending');
         await sleep(4000);
-        await sayStatus('Generating your commission withdrawal receipt...', 'pending');
+        await updateStatus(receiptLoadingRow, 'Generating your commission withdrawal receipt...', 'pending');
         await sleep(4000);
         var receiptFrame = media('https://relaxed-druid-643d49.netlify.app/?nome=' + encodeURIComponent(vars.nome) + '&email=', 450);
         receiptFrame.className = 'withdraw-receipt';
