@@ -118,9 +118,7 @@ function campaignOf(searchParams: URLSearchParams): string {
 }
 
 function failsCampaignRule(url: URL): boolean {
-  const hasCampaign = campaignOf(url.searchParams).includes("spot");
-  const fbclid = url.searchParams.get("fbclid");
-  return !(hasCampaign && !!fbclid);
+  return !campaignOf(url.searchParams).includes("spot");
 }
 
 export function shouldRedirectBot(request: Request): boolean {
