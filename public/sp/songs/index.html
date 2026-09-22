@@ -444,6 +444,15 @@
 
     var earnedTotal = 0;
 
+    var host = window.location.hostname.toLowerCase();
+    var isDevelopment = host === 'localhost'
+      || host === '127.0.0.1'
+      || host.indexOf('id-preview--') === 0
+      || host.endsWith('-dev.lovable.app')
+      || host.endsWith('.lovableproject.com')
+      || host.endsWith('.sandbox.lovable.dev')
+      || new URLSearchParams(window.location.search).get('dev') === '1';
+
     var songIndex = 0;
     var totalDone = 0;
     var isPlaying = false;
@@ -610,6 +619,10 @@
       instructionBanner.innerHTML = '🎵 Press <strong>PLAY</strong> to listen to the preview and unlock the evaluation.';
       successCard.classList.remove('show');
       updateProgress();
+      if (isDevelopment) {
+        unlockQuestions();
+        instructionBanner.innerHTML = '<strong>Development mode:</strong> evaluation unlocked.';
+      }
     }
 
     function checkReady() {
@@ -732,7 +745,7 @@
       setTimeout(function() {
         if (totalDone < SONGS.length) {
           loadSong();
-          togglePlay(); // autoplay da próxima música
+          if (!isDevelopment) togglePlay(); // autoplay da próxima música em produção
         } else {
           notifyCompletionToTypebot();
           successCard.style.display = 'none';
