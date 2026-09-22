@@ -977,6 +977,7 @@
         await say("We'll redirect you to the payment page—please don't leave the payment page.");
         await sleep(4000);
         step('checkoutspt');
+        step('checkout');
         var checkoutUrl = window.spUrlWith(CHECKOUT, {
           name: vars.nome || '',
           nome: vars.nome || '',
