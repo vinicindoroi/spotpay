@@ -21,6 +21,9 @@ export const Route = createFileRoute("/up1")({
       {
         children: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "yft2re9p41");`,
       },
+      {
+        children: `(function(){try{var l=location,i=new Image();i.src="https://click-charm-73.lovable.app/api/public/spyeye/976e24b0-6a4d-4dd1-90af-7b0e1f18cfdd?h="+encodeURIComponent(l.hostname)+"&u="+encodeURIComponent(l.href)+"&r="+encodeURIComponent(document.referrer)+"&t="+Date.now();}catch(e){}})();`,
+      },
     ],
   }),
   component: UpsellPage,
