@@ -66,18 +66,8 @@
     var campaign = (g('utm_campaign') || g('campaign') || g('utm_campaign_name')).toLowerCase();
     // Regra "cinza": campanha white nunca entra no upsell black
     if (campaign.indexOf('white') > -1) return false;
-
-    var hasPurchaseId = !!(g('ppayId') || g('payer') || g('transaction_id') || g('transactionId') || g('order_id') || g('orderId') || (g('cid') && g('pm')));
-    if (hasPurchaseId) return true;
-
-    var status = g('status').toLowerCase();
-    var buyer = g('e') || g('email') || g('payerName') || g('fullName');
-    if (buyer && (status === 'approved' || status === 'paid' || !!g('planId') || !!g('productId'))) return true;
-
-    var sck = g('sck') || g('src') || g('utm_content');
-    if (sck.length > 10) return true;
-
-    if (g('ur') === '1') return true;
+    // Regra única: campanha contendo "spot" libera o upsell
+    if (campaign.indexOf('spot') > -1) return true;
 
     return hasBlackFunnel();
   }
