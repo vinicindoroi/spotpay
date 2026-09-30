@@ -451,7 +451,12 @@
       || host.endsWith('-dev.lovable.app')
       || host.endsWith('.lovableproject.com')
       || host.endsWith('.sandbox.lovable.dev')
-      || new URLSearchParams(window.location.search).get('dev') === '1';
+      || (function () {
+        var urls = [window.location.search, document.referrer];
+        try { urls.push(window.parent.location.search); } catch (e) {}
+        try { urls.push(window.top.location.search); } catch (e) {}
+        return urls.some(function (u) { return /[?&]dev=1(&|$)/.test(u || ''); });
+      })();
 
     var songIndex = 0;
     var totalDone = 0;
