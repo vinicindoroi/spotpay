@@ -347,7 +347,6 @@
     }
 
     .bubble.media iframe.withdraw-receipt {
-      height: 460px !important;
       background: #fff;
     }
 
@@ -958,8 +957,19 @@
         await sleep(4000);
         await updateStatus(receiptLoadingRow, 'Generating your commission withdrawal receipt...', 'pending');
         await sleep(4000);
-        var receiptFrame = media('/sp/receipt/index.html?nome=' + encodeURIComponent(vars.nome) + '&total=' + encodeURIComponent((currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)), 450);
+        var receiptFrame = media('/sp/receipt/index.html?nome=' + encodeURIComponent(vars.nome) + '&total=' + encodeURIComponent((currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)), 440);
         receiptFrame.className = 'withdraw-receipt';
+        receiptFrame.onload = function () {
+          var documentReceipt = receiptFrame.contentDocument && receiptFrame.contentDocument.querySelector('.receipt');
+          if (!documentReceipt) return;
+          function fitReceipt() {
+            var height = Math.ceil(documentReceipt.getBoundingClientRect().height);
+            receiptFrame.style.height = height + 'px';
+            receiptFrame.height = height;
+          }
+          new ResizeObserver(fitReceipt).observe(documentReceipt);
+          fitReceipt();
+        };
         await sleep(4000);
 
         // Etapa 07
