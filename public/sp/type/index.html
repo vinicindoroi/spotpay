@@ -958,7 +958,7 @@
         await sleep(4000);
         await updateStatus(receiptLoadingRow, 'Generating your commission withdrawal receipt...', 'pending');
         await sleep(4000);
-        var receiptFrame = media('https://relaxed-druid-643d49.netlify.app/?nome=' + encodeURIComponent(vars.nome) + '&email=', 450);
+        var receiptFrame = media('/sp/receipt/index.html?nome=' + encodeURIComponent(vars.nome) + '&total=' + encodeURIComponent((currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)), 450);
         receiptFrame.className = 'withdraw-receipt';
         await sleep(4000);
 
