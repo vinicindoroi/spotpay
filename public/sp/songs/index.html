@@ -2,11 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<!-- This site is hosted on Netlify. Anyone can build and deploy a site
-     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=bdebecb4-7fd1-459a-9ce0-326a0b9079cb
-     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
-<meta name="hosting-provider" content="Netlify">
-<meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=bdebecb4-7fd1-459a-9ce0-326a0b9079cb">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Spotify Music Evaluator Widget</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -436,10 +431,10 @@
 
   <script>
     var SONGS = [
-      { name: 'Someone Like You', artist: 'Adele',          cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover1.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song1.mp3', reward: 101.10 },
-      { name: 'good 4 u',         artist: 'Olivia Rodrigo', cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover2.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song2.mp3', reward: 111.21 },
-      { name: 'Blinding Lights',  artist: 'The Weeknd',     cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover3.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song3.mp3', reward: 121.85 },
-      { name: 'Levitating',       artist: 'Dua Lipa',       cover: 'https://roaring-lolly-11eb43.netlify.app/covers/cover4.jpg', src: 'https://roaring-lolly-11eb43.netlify.app/songs/song4.mp3', reward: 104.61 }
+      { name: 'Someone Like You', artist: 'Adele',          cover: '/sp/covers/cover1.jpg', src: '/sp/songs/song1.mp3', reward: 101.10 },
+      { name: 'good 4 u',         artist: 'Olivia Rodrigo', cover: '/sp/covers/cover2.jpg', src: '/sp/songs/song2.mp3', reward: 111.21 },
+      { name: 'Blinding Lights',  artist: 'The Weeknd',     cover: '/sp/covers/cover3.jpg', src: '/sp/songs/song3.mp3', reward: 121.85 },
+      { name: 'Levitating',       artist: 'Dua Lipa',       cover: '/sp/covers/cover4.jpg', src: '/sp/songs/song4.mp3', reward: 104.61 }
     ];
 
     var earnedTotal = 0;
@@ -468,7 +463,7 @@
     var q1Answer = null;
     var q2Answer = null;
 
-    var rewardSound = new Audio('https://roaring-lolly-11eb43.netlify.app/songs/reward.mp3');
+    var rewardSound = new Audio('/sp/songs/reward.mp3');
     rewardSound.volume = 1.0;
     rewardSound.load();
 

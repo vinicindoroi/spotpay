@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Serve evaluator music, cover art, and reward audio from local `/sp/` assets so playback does not depend on third-party hosting.
