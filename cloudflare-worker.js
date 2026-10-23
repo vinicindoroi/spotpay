@@ -13,7 +13,7 @@
 
 // Chave da API do ProxyCheck.io (obtenha gratuitamente em https://proxycheck.io/)
 // Se estiver vazia, o worker usa apenas a triagem local do Cloudflare
-const PROXYCHECK_API_KEY = ""; 
+const PROXYCHECK_API_KEY = "96b67s-522c54-730017-h38p9e"; 
 
 // Configuração dos caminhos das páginas
 const WHITEPAGE_PATH = "/w/index.html";
