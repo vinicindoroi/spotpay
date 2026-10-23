@@ -1,18 +1,50 @@
 /**
- * Cloudflare Worker - Cloaker Próprio (Estilo CloakUp)
+ * ============================================================================
+ * CLOUDFLARE WORKER - SISTEMA DE CLOAKING PROFISSIONAL (REVERSE PROXY PURO)
+ * ============================================================================
  * 
- * Arquitetura de Reverse Proxy Transparente:
- * - 0% Iframes no DOM
- * - 0% Redirecionamentos 301/302 (Resposta HTTP 200 pura)
- * - Triagem no Edge em 3 camadas:
- *   1. Filtro local gratuito (ASNs de Datacenters + Bots conhecidos)
- *   2. Cache local KV/Memory de IPs (economiza consultas de API)
- *   3. Consulta à API de Threat Intelligence (ProxyCheck.io) para pegar proxies residenciais
- * - Proxy reverso que entrega a Whitepage para moderadores e a Oferta para humanos
+ * 📖 GUIA RÁPIDO: COMO CONFIGURAR, INSTALAR E TESTAR
+ * 
+ * ----------------------------------------------------------------------------
+ * 1. COMO INSTALAR NO PAINEL DA CLOUDFLARE:
+ * ----------------------------------------------------------------------------
+ * Passo 1: Acesse https://dash.cloudflare.com/ e faça login.
+ * Passo 2: No menu lateral esquerdo, vá em "Compute (Workers & Pages)" > clique no seu Worker (ex: spotshield).
+ * Passo 3: No canto superior direito, clique em "Editar código" (Edit code).
+ * Passo 4: Apague tudo o que estiver no editor e cole todo o conteúdo deste arquivo.
+ * Passo 5: Clique no botão azul "Implantar" (Deploy) no canto superior direito.
+ * 
+ * ----------------------------------------------------------------------------
+ * 2. COMO CONFIGURAR AS ROTAS DO DOMÍNIO:
+ * ----------------------------------------------------------------------------
+ * Passo 1: No painel do mesmo Worker, vá na aba "Configurações" > "Domínios e rotas".
+ * Passo 2: Clique em "+ Adicionar rota" e preencha:
+ *          - Rota: program.official-partner.online/*
+ *          - Zona: official-partner.online
+ * Passo 3: Clique em "Salvar".
+ * (Dica: Certifique-se de que o DNS do subdomínio esteja com a "Nuvem Laranja / Com proxy" ativada).
+ * 
+ * ----------------------------------------------------------------------------
+ * 3. COMO TESTAR SE ESTÁ FUNCIONANDO PERFEITAMENTE:
+ * ----------------------------------------------------------------------------
+ * Teste A (Simulando o Robô / Revisor do Meta):
+ * -> Abra uma aba anônima e acesse o domínio PURO, sem nenhum parâmetro:
+ *    https://program.official-partner.online/
+ * -> RESULTADO ESPERADO: Deve abrir a WHITEPAGE (Curso de Música com rodapé institucional).
+ * 
+ * Teste B (Simulando o Comprador Real / Lead do Anúncio):
+ * -> No seu celular (pelo 4G/5G, fora de VPN), acesse o link completo da campanha:
+ *    https://program.official-partner.online/?utm_campaign=spot-live&utm_source=fb&utm_medium=cpc&fbclid=12345
+ * -> RESULTADO ESPERADO: Deve abrir a OFERTA REAL direto, sem iframe e sem ver a whitepage.
+ * 
+ * ----------------------------------------------------------------------------
+ * 4. LINK PARA COLOCAR NO GERENCIADOR DE ANÚNCIOS (FACEBOOK ADS):
+ * ----------------------------------------------------------------------------
+ * https://program.official-partner.online/?utm_campaign=spot-live&utm_source=fb&utm_medium=cpc&utm_content={{ad.name}}&fbclid={{fbclid}}
+ * ============================================================================
  */
 
-// Chave da API do ProxyCheck.io (obtenha gratuitamente em https://proxycheck.io/)
-// Se estiver vazia, o worker usa apenas a triagem local do Cloudflare
+// Chave da API do ProxyCheck.io (já configurada)
 const PROXYCHECK_API_KEY = "96b67s-522c54-730017-h38p9e"; 
 
 // Configuração dos caminhos das páginas
@@ -138,7 +170,7 @@ export default {
 
     let isModerator = isBotUA || isDatacenter || !hasValidCampaign || isSuspiciousBrowser;
 
-    // 5. Tira-teima com API de Threat Intelligence (se configurada e ainda parecer humano)
+    // 5. Tira-teima com API de Threat Intelligence (ProxyCheck.io)
     if (!isModerator && PROXYCHECK_API_KEY) {
       const isProxyOrVpn = await checkIpThreat(clientIp, PROXYCHECK_API_KEY);
       if (isProxyOrVpn) {
