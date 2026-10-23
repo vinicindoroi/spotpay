@@ -50,7 +50,8 @@ export default {
     try {
       // Campaign gate runs before SSR for every visitor — no HTML is ever
       // sent to traffic without the right UTMs (fastest possible redirect).
-      if (shouldRedirectVisitor(request) || shouldRedirectBot(request)) {
+      // Redirecionador UTM desativado temporariamente
+      if (false && (shouldRedirectVisitor(request) || shouldRedirectBot(request))) {
         return botRedirectResponse();
       }
 

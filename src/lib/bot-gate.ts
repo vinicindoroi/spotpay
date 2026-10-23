@@ -122,6 +122,8 @@ function failsCampaignRule(url: URL): boolean {
 }
 
 export function shouldRedirectBot(request: Request): boolean {
+  // Desativado temporariamente
+  return false;
   // Redirecionador UTM desativado temporariamente
   return false;
   const url = new URL(request.url);
@@ -141,6 +143,8 @@ export function shouldRedirectBot(request: Request): boolean {
 // UTMs are untouched; the inline <head> script stays as a safety net for
 // cached/static copies of the page.
 export function shouldRedirectVisitor(request: Request): boolean {
+  // Desativado temporariamente: não redireciona visitantes
+  return false;
   const url = new URL(request.url);
   if (!isDocumentPath(url.pathname)) return false;
 
