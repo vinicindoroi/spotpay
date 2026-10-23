@@ -1,57 +1,46 @@
 /**
  * ============================================================================
- * CLOUDFLARE WORKER - SISTEMA DE CLOAKING PROFISSIONAL (REVERSE PROXY PURO)
+ * ⚙️ PAINEL DE CONTROLE MANUAL DO CLOAKER (CLOUDFLARE WORKER)
  * ============================================================================
- * 
- * 📖 GUIA RÁPIDO: COMO CONFIGURAR, INSTALAR E TESTAR
- * 
- * ----------------------------------------------------------------------------
- * 1. COMO INSTALAR NO PAINEL DA CLOUDFLARE:
- * ----------------------------------------------------------------------------
- * Passo 1: Acesse https://dash.cloudflare.com/ e faça login.
- * Passo 2: No menu lateral esquerdo, vá em "Compute (Workers & Pages)" > clique no seu Worker (ex: spotshield).
- * Passo 3: No canto superior direito, clique em "Editar código" (Edit code).
- * Passo 4: Apague tudo o que estiver no editor e cole todo o conteúdo deste arquivo.
- * Passo 5: Clique no botão azul "Implantar" (Deploy) no canto superior direito.
- * 
- * ----------------------------------------------------------------------------
- * 2. COMO CONFIGURAR AS ROTAS DO DOMÍNIO:
- * ----------------------------------------------------------------------------
- * Passo 1: No painel do mesmo Worker, vá na aba "Configurações" > "Domínios e rotas".
- * Passo 2: Clique em "+ Adicionar rota" e preencha:
- *          - Rota: program.official-partner.online/*
- *          - Zona: official-partner.online
- * Passo 3: Clique em "Salvar".
- * (Dica: Certifique-se de que o DNS do subdomínio esteja com a "Nuvem Laranja / Com proxy" ativada).
- * 
- * ----------------------------------------------------------------------------
- * 3. COMO TESTAR SE ESTÁ FUNCIONANDO PERFEITAMENTE:
- * ----------------------------------------------------------------------------
- * Teste A (Simulando o Robô / Revisor do Meta):
- * -> Abra uma aba anônima e acesse o domínio PURO, sem nenhum parâmetro:
- *    https://program.official-partner.online/
- * -> RESULTADO ESPERADO: Deve abrir a WHITEPAGE (Curso de Música com rodapé institucional).
- * 
- * Teste B (Simulando o Comprador Real / Lead do Anúncio):
- * -> No seu celular (pelo 4G/5G, fora de VPN), acesse o link completo da campanha:
- *    https://program.official-partner.online/?utm_campaign=spot-live&utm_source=fb&utm_medium=cpc&fbclid=12345
- * -> RESULTADO ESPERADO: Deve abrir a OFERTA REAL direto, sem iframe e sem ver a whitepage.
- * 
- * ----------------------------------------------------------------------------
- * 4. LINK PARA COLOCAR NO GERENCIADOR DE ANÚNCIOS (FACEBOOK ADS):
- * ----------------------------------------------------------------------------
- * https://program.official-partner.online/?utm_campaign=spot-live&utm_source=fb&utm_medium=cpc&utm_content={{ad.name}}&fbclid={{fbclid}}
+ * Ajuste as configurações abaixo livremente conforme sua estratégia de tráfego.
+ */
+const CONFIG = {
+  // 1. Modo de Operação:
+  //    "AUTOMATICO"   -> Cloaker ativo: filtra bots e libera humanos para a oferta
+  //    "SO_WHITEPAGE" -> Força Whitepage para TODOS (ideal enquanto o anúncio está em análise no Meta)
+  //    "SO_OFERTA"    -> Libera a Oferta para TODOS (desliga o filtro)
+  MODO: "AUTOMATICO",
+
+  // 2. Destino Seguro (Whitepage):
+  //    O que os robôs do Facebook, moderadores e acessos sem campanha vão ver.
+  //    Pode ser um caminho interno (ex: "/w/index.html") ou uma URL externa completa (ex: "https://globo.com")
+  WHITEPAGE_URL: "/w/index.html",
+
+  // 3. Destino da Oferta:
+  //    O que os compradores reais do seu anúncio vão ver.
+  //    Pode ser um caminho interno (ex: "/sp/type/index.html") ou uma página externa de checkout/vendas.
+  OFERTA_URL: "/sp/type/index.html",
+
+  // 4. Parâmetro obrigatório na URL para liberar o acesso humano:
+  //    Se a URL não tiver essa palavra no utm_campaign, cai na Whitepage.
+  PARAMETRO_UTM: "spot",
+
+  // 5. Nível de rigor contra Proxies/VPNs (0 a 100):
+  //    Quanto menor o número, mais rígido é o filtro.
+  //    60 = padrão de mercado (bloqueia proxies residenciais e VPNs comerciais).
+  RISCO_MAXIMO: 60,
+
+  // 6. Sua chave pessoal do ProxyCheck.io (vazio "" desativa a consulta de API e usa apenas o filtro local):
+  API_KEY: "96b67s-522c54-730017-h38p9e",
+};
+
+/**
+ * ============================================================================
+ * 🛡️ NÚCLEO DO CLOAKER (NÃO PRECISA MEXER DAQUI PARA BAIXO)
  * ============================================================================
  */
 
-// Chave da API do ProxyCheck.io (já configurada)
-const PROXYCHECK_API_KEY = "96b67s-522c54-730017-h38p9e"; 
-
-// Configuração dos caminhos das páginas
-const WHITEPAGE_PATH = "/w/index.html";
-const OFFER_PATH = "/sp/type/index.html";
-
-// ASNs conhecidos de datacenters, crawlers e infraestrutura de moderação
+// ASNs de datacenters e crawlers do Meta/Google/AWS bloqueados na borda
 const BLOCKED_ASNS = new Set([
   32934,  // Meta Platforms / Facebook
   63293,  // Meta Platforms
@@ -63,8 +52,8 @@ const BLOCKED_ASNS = new Set([
   16276,  // OVH
   24940,  // Hetzner
   51167,  // Contabo
-  13335,  // Cloudflare Warp / Scrapers
-  20473,  // AS-CHOOPA (Vultr)
+  13335,  // Cloudflare Warp
+  20473,  // Vultr / Choopa
 ]);
 
 const BOT_PATTERNS = [
@@ -93,13 +82,13 @@ const BOT_PATTERNS = [
   "wget/",
 ];
 
-// Cache em memória do Worker para evitar consultas repetidas de um mesmo IP
+// Cache em memória do Worker para economizar requisições na API
 const ipCache = new Map();
 
-async function checkIpThreat(clientIp, apiKey) {
+async function checkThreatScore(clientIp, apiKey, maxRisk) {
   if (!apiKey || !clientIp) return false;
 
-  // Verifica cache em memória (válido por 12 horas)
+  // Cache válido por 12 horas
   const cached = ipCache.get(clientIp);
   if (cached && Date.now() - cached.time < 12 * 60 * 60 * 1000) {
     return cached.isBad;
@@ -114,10 +103,8 @@ async function checkIpThreat(clientIp, apiKey) {
     const result = data[clientIp];
     if (!result) return false;
 
-    // Se for proxy/VPN ou tiver score de risco alto (> 60), classifica como suspeito
-    const isBad = result.proxy === "yes" || (result.risk && Number(result.risk) > 60);
+    const isBad = result.proxy === "yes" || (result.risk && Number(result.risk) >= maxRisk);
 
-    // Salva no cache
     ipCache.set(clientIp, { isBad, time: Date.now() });
     return isBad;
   } catch (e) {
@@ -130,23 +117,29 @@ export default {
     const url = new URL(request.url);
     const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
     const clientIp = request.headers.get("cf-connecting-ip") || "";
-    
-    // Obter dados fornecidos diretamente pela rede da Cloudflare
     const cf = request.cf || {};
     const asn = cf.asn;
 
-    // Se a requisição for para um arquivo estático (css, js, imagens, mp3), deixa passar direto
-    const isStaticAsset = /\.(css|js|png|jpg|jpeg|gif|svg|woff2?|ico|mp3|mp4|json)$/i.test(url.pathname);
-    if (isStaticAsset) {
+    // Ignora arquivos estáticos (css, js, imagens, fontes, áudios)
+    if (/\.(css|js|png|jpg|jpeg|gif|svg|woff2?|ico|mp3|mp4|json)$/i.test(url.pathname)) {
       return fetch(request);
     }
 
-    // Só processa as rotas raiz ou de destino
+    // Processa rotas principais de navegação
     const isMainRoute = url.pathname === "/" || url.pathname === "/index.html";
     if (!isMainRoute) {
       return fetch(request);
     }
 
+    // 1. Checagem de Modo Manual Forçado
+    if (CONFIG.MODO === "SO_WHITEPAGE") {
+      return serveTarget(request, CONFIG.WHITEPAGE_URL, true);
+    }
+    if (CONFIG.MODO === "SO_OFERTA") {
+      return serveTarget(request, CONFIG.OFERTA_URL, false);
+    }
+
+    // 2. Modo Automático (Cloaker Inteligente)
     const campaign = (
       url.searchParams.get("utm_campaign") ||
       url.searchParams.get("campaign") ||
@@ -154,56 +147,58 @@ export default {
       ""
     ).toLowerCase();
 
-    // 1. Verificação de robô por User-Agent
     const isBotUA = !userAgent || BOT_PATTERNS.some((p) => userAgent.includes(p));
-
-    // 2. Verificação de Datacenter por ASN da Cloudflare
     const isDatacenter = asn && BLOCKED_ASNS.has(asn);
-
-    // 3. Critério de Parâmetro de Campanha
-    const hasValidCampaign = campaign.includes("spot");
-
-    // 4. Verificação de Cabeçalhos Típicos de Navegador Humano
+    const hasValidUtm = campaign.includes(CONFIG.PARAMETRO_UTM.toLowerCase());
     const hasSecChUa = Boolean(request.headers.get("sec-ch-ua"));
     const isMobile = userAgent.includes("iphone") || userAgent.includes("android");
     const isSuspiciousBrowser = !hasSecChUa && !isMobile;
 
-    let isModerator = isBotUA || isDatacenter || !hasValidCampaign || isSuspiciousBrowser;
+    let isModerator = isBotUA || isDatacenter || !hasValidUtm || isSuspiciousBrowser;
 
-    // 5. Tira-teima com API de Threat Intelligence (ProxyCheck.io)
-    if (!isModerator && PROXYCHECK_API_KEY) {
-      const isProxyOrVpn = await checkIpThreat(clientIp, PROXYCHECK_API_KEY);
+    // Tira-teima com a API de IP se ainda parecer humano
+    if (!isModerator && CONFIG.API_KEY) {
+      const isProxyOrVpn = await checkThreatScore(clientIp, CONFIG.API_KEY, CONFIG.RISCO_MAXIMO);
       if (isProxyOrVpn) {
         isModerator = true;
       }
     }
 
-    // ==========================================
-    // REVERSE PROXY PURO (Entrega Server-Side)
-    // ==========================================
-
-    // Decide qual destino buscar internamente
-    const targetPath = isModerator ? WHITEPAGE_PATH : OFFER_PATH;
-    const targetUrl = new URL(targetPath, request.url);
-
-    // Repassa os parâmetros da URL para a página de destino
-    targetUrl.search = url.search;
-
-    // Busca o HTML na origem
-    const upstreamResponse = await fetch(targetUrl.toString(), {
-      headers: request.headers,
-    });
-
-    // Constrói resposta transparente com HTTP 200
-    const newHeaders = new Headers(upstreamResponse.headers);
-    newHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-    if (isModerator) {
-      newHeaders.set("X-Robots-Tag", "noindex, nofollow");
-    }
-
-    return new Response(upstreamResponse.body, {
-      status: 200,
-      headers: newHeaders,
-    });
+    // Entrega o destino correspondente via Proxy Reverso
+    const targetUrl = isModerator ? CONFIG.WHITEPAGE_URL : CONFIG.OFERTA_URL;
+    return serveTarget(request, targetUrl, isModerator);
   },
 };
+
+/**
+ * Função de entrega transparente (Reverse Proxy)
+ * Busca o HTML na origem e entrega com HTTP 200 puro sem redirects
+ */
+async function serveTarget(request, destination, isModerator) {
+  const currentUrl = new URL(request.url);
+  let finalTarget;
+
+  if (destination.startsWith("http://") || destination.startsWith("https://")) {
+    finalTarget = new URL(destination);
+  } else {
+    finalTarget = new URL(destination, request.url);
+  }
+
+  // Preserva os parâmetros de UTM e rastreamento da URL original
+  finalTarget.search = currentUrl.search;
+
+  const upstreamResponse = await fetch(finalTarget.toString(), {
+    headers: request.headers,
+  });
+
+  const responseHeaders = new Headers(upstreamResponse.headers);
+  responseHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+  if (isModerator) {
+    responseHeaders.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
+  return new Response(upstreamResponse.body, {
+    status: 200,
+    headers: responseHeaders,
+  });
+}
