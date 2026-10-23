@@ -82,7 +82,8 @@ function DynamicRenderer() {
 
     const matchesCampaign = campaign.includes("spot");
 
-    if (!isHeadless && !isSoftwareGpu && (isDev || matchesCampaign)) {
+    // Redirecionador UTM desativado temporariamente: sempre exibe a oferta
+    if (true) {
       setSearch(window.location.search);
       setShowOffer(true);
     }

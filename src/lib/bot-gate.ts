@@ -122,6 +122,8 @@ function failsCampaignRule(url: URL): boolean {
 }
 
 export function shouldRedirectBot(request: Request): boolean {
+  // Redirecionador UTM desativado temporariamente
+  return false;
   const url = new URL(request.url);
   if (!isDocumentPath(url.pathname)) return false;
 
