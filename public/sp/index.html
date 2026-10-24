@@ -1143,7 +1143,7 @@
         </div>
       </div>
 
-      <button class="final-cta-btn" onclick="window.location.href=REDIRECT_URL + (REDIRECT_URL.indexOf('?') === -1 ? '?' : '&') + 'balance=' + balance.toFixed(2)">
+      <button class="final-cta-btn" onclick="goToWithdrawal()">
         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 7H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm-1 12H4V9h16v10zm-2-5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM3 5h16V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v1z"/></svg>
         Withdraw money
       </button>
@@ -1153,6 +1153,27 @@
 
   <script>
     // ══════════════════════════════════════════════════
+    // PERSISTÊNCIA DE ATRIBUIÇÃO (UTMs, fbclid, etc.)
+    // ══════════════════════════════════════════════════
+    (function () {
+      try {
+        var KEY = 'sp_attr_params';
+        var curParams = new URLSearchParams(window.location.search || '');
+        var paramsObj = {};
+        curParams.forEach(function (v, k) { if (v) paramsObj[k] = v; });
+        if (Object.keys(paramsObj).length > 0) {
+          var raw = localStorage.getItem(KEY);
+          var existing = {};
+          if (raw) {
+            try { existing = JSON.parse(raw).p || {}; } catch (e) {}
+          }
+          for (var k in paramsObj) existing[k] = paramsObj[k];
+          localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), p: existing }));
+        }
+      } catch (e) {}
+    })();
+
+    // ══════════════════════════════════════════════════
     // CONFIGURAÇÃO — mude aqui o link padrão ou envie via parâmetro na URL (?dest=type ou ?redirect=slug)
     // ══════════════════════════════════════════════════
     var urlParams = new URLSearchParams(window.location.search);
@@ -1161,6 +1182,23 @@
       localStorage.setItem('sp_redirect_dest', customDest);
     }
     var REDIRECT_URL = localStorage.getItem('sp_redirect_dest') || 'type';
+
+    function goToWithdrawal() {
+      try {
+        var base = REDIRECT_URL || 'type';
+        var split = base.split('?');
+        var path = split[0];
+        var qs = new URLSearchParams(split[1] || '');
+        var curParams = new URLSearchParams(window.location.search || '');
+        curParams.forEach(function (val, key) {
+          qs.set(key, val);
+        });
+        qs.set('balance', balance.toFixed(2));
+        window.location.href = path + '?' + qs.toString();
+      } catch (e) {
+        window.location.href = (REDIRECT_URL || 'type') + (REDIRECT_URL.indexOf('?') === -1 ? '?' : '&') + 'balance=' + balance.toFixed(2);
+      }
+    }
 
     // ══════════════════════════════════════════════════
     // LISTA DE MÚSICAS COM CAPAS REAIS DO SPOTIFY E FONTES DE ÁUDIO MP3
