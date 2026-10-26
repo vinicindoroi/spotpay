@@ -805,13 +805,12 @@
 
       function clearInput() { input.innerHTML = ''; }
 
-      function askButton(label, checkout) {
+      function askButton(label) {
         return new Promise(function (resolve) {
           clearInput();
           var b = document.createElement('button');
           b.className = 'cta';
           b.textContent = label;
-          if (checkout) b.setAttribute('data-meta-checkout', '');
           b.onclick = function () {
             clearInput();
             userRow(label);
@@ -975,8 +974,7 @@
         await sleep(4000);
         await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
         await sleep(3000);
-        await say('Continue to the payment page using the button below.');
-        await askButton('Continue to checkout', true);
+        await say('You are being redirected to the payment page...');
         step('checkoutspt');
         step('checkout');
         var checkoutUrl = window.spUrlWith(CHECKOUT, {
@@ -986,6 +984,7 @@
           ref: 'chat',
           balance: (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)
         });
+        try { if (window.spMeta) window.spMeta.checkout(); } catch (e) {}
         try { window.top.location.href = checkoutUrl; } catch (e) { window.location.href = checkoutUrl; }
       }
 
