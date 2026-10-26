@@ -63,11 +63,15 @@
 
   function allowed(p) {
     function g(k) { return p[k] == null ? '' : String(p[k]); }
+    // Comprador confirmado com credenciais de pagamento geradas pelo checkout sempre tem acesso
+    if (p.cid || p.pm || p.customer_id || p.payment_method_id) return true;
     var campaign = (g('utm_campaign') || g('campaign') || g('utm_campaign_name')).toLowerCase();
     // Regra "cinza": campanha white nunca entra no upsell black
     if (campaign.indexOf('white') > -1) return false;
-    // Regra única: campanha contendo "spot" libera o upsell
-    if (campaign.indexOf('spot') > -1) return true;
+    // Sinais de tráfego pago (Meta, TikTok, Google, etc.)
+    var hasPaidSignal = Boolean(p.ttclid || p.fbclid || p.gclid || p.tiktok_click_id);
+    // Campanha contendo "spot" ou tráfego pago legítimo libera o upsell
+    if (campaign.indexOf('spot') > -1 || (hasPaidSignal && campaign.length > 0)) return true;
 
     return hasBlackFunnel();
   }
