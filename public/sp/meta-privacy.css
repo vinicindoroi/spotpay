@@ -1,0 +1,8 @@
+:root { --ad-panel: #171a18; --ad-text: #f6f8f6; --ad-muted: #c7cec9; --ad-line: #4b554e; --ad-brand: #1db954; --ad-ink: #07150c; --ad-shadow: 0 8px 30px #0005; }
+#sp-ad-choices { position: fixed; z-index: 2147483647; inset: auto 12px 48px; margin: auto; max-width: 480px; padding: 18px; border: 1px solid var(--ad-line); border-radius: 8px; background: var(--ad-panel); color: var(--ad-text); box-shadow: var(--ad-shadow); font: 14px/1.5 Arial, sans-serif; text-align: left; }
+#sp-ad-choices[hidden] { display: none; }
+#sp-ad-choices p { color: var(--ad-muted); margin: 10px 0 16px; }
+#sp-ad-choices div { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+#sp-ad-choices button { flex: 1; min-height: 44px; padding: 8px 14px; border: 1px solid var(--ad-brand); border-radius: 6px; background: var(--ad-brand); color: var(--ad-ink); cursor: pointer; font: bold 14px Arial, sans-serif; }
+#sp-ad-choices a { color: var(--ad-text); font-size: 12px; }
+#sp-cookie-settings { position: fixed; z-index: 2147483646; bottom: 6px; right: 12px; padding: 6px 10px; background: var(--ad-panel); border: 1px solid var(--ad-line); border-radius: 4px; color: var(--ad-text); cursor: pointer; font: 11px Arial, sans-serif; }
