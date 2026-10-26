@@ -275,7 +275,7 @@
 
   <script>
     (function () {
-      var query = window.location.search;
+      var query = window.spTrackingSearch || window.location.search;
       if (!query) return;
       document.querySelectorAll('.checkout-link').forEach(function (link) {
         try {
