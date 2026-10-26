@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="/sp/meta-pixel.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Streaming Income Foundations — A Practical Course for Independent Artists</title>
@@ -261,7 +262,7 @@
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
         <strong style="color: #fff; font-size: 14px;">Institutional & Legal</strong>
-        <a href="javascript:alert('Privacy Policy: We respect your privacy and process personal data strictly in accordance with GDPR/LGPD regulations. Information collected is used solely for training communication.');" style="color: #7ee19a; text-decoration: underline;">Privacy Policy</a>
+        <a href="/sp/privacy.html" style="color: #7ee19a; text-decoration: underline;">Privacy Policy</a>
         <a href="javascript:alert('Terms of Service: By accessing this educational training, you agree to our terms. All contents and materials are for educational and training purposes only.');" style="color: #7ee19a; text-decoration: underline;">Terms of Service</a>
         <a href="mailto:support@officialprogram.online" style="color: #aeb8ad; text-decoration: underline;">Contact Support</a>
       </div>
@@ -274,7 +275,7 @@
 
   <script>
     (function () {
-      var query = window.location.search;
+      var query = window.spTrackingSearch || window.location.search;
       if (!query) return;
       document.querySelectorAll('.checkout-link').forEach(function (link) {
         try {

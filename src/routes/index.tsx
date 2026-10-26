@@ -30,11 +30,13 @@ export const Route = createFileRoute("/")({
 });
 
 function DynamicRenderer() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string | null>(null);
 
   useEffect(() => {
     setSearch(window.location.search);
   }, []);
+
+  if (search === null) return null;
 
   return (
     <iframe

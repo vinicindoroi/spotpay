@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Serve evaluator music, cover art, and reward audio from local `/sp/` assets so playback does not depend on third-party hosting.
+- Centralize browser advertising tracking in `/sp/meta-pixel.js`; embedded same-origin pages share the top-level instance to prevent duplicate initialization and views.
+- Preserve original query parameters in memory before cleaning tracking-visible URLs so attribution and checkout data remain available without exposing customer details to the Pixel.
