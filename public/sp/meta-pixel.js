@@ -79,7 +79,7 @@
     if (existing) { existing.hidden = false; return; }
     var panel = doc.createElement('section'); panel.id = 'sp-ad-choices';
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Advertising privacy');
-    panel.innerHTML = '<strong>Advertising privacy</strong><p>Allow Meta (Facebook) to receive page visits and checkout clicks, page addresses, cookie identifiers, IP address and browser information for ad measurement and optimization? You can change your choice in Cookie settings.</p><div><button type="button" data-choice="no">Reject</button><button type="button" data-choice="yes">Accept</button><a href="/sp/privacy.html" target="_blank" rel="noopener">Privacy policy</a></div>';
+    panel.innerHTML = '<strong>Advertising privacy</strong><p>Allow Meta (Facebook) to receive page visits and checkout starts, page addresses, cookie identifiers, IP address and browser information for ad measurement and optimization? You can change your choice in Cookie settings.</p><div><button type="button" data-choice="no">Reject</button><button type="button" data-choice="yes">Accept</button><a href="/sp/privacy.html" target="_blank" rel="noopener">Privacy policy</a></div>';
     doc.body.appendChild(panel);
     panel.querySelectorAll('[data-choice]').forEach(function (button) {
       button.addEventListener('click', function () {

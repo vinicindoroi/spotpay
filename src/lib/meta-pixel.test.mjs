@@ -38,3 +38,23 @@ test('embedded document reuses top-level pixel without initialization', () => {
   vm.runInNewContext(source, { window: child, document: doc, location: f.w.location, URL });
   assert.equal(child.spMeta, f.w.spMeta); assert.equal(child.fbq, undefined);
 });
+test('final chat automatically reports InitiateCheckout immediately before navigating with attribution', async () => {
+  const html = readFileSync('public/sp/type/index.html', 'utf8');
+  const start = html.indexOf("        step('checkoutspt');");
+  const end = html.indexOf('\n      }', start);
+  assert.ok(start > 0 && end > start);
+  const f = fixture();
+  const sequence = [];
+  const top = { location: { set href(url) { sequence.push(['redirect', url]); } } };
+  await vm.runInNewContext('(async () => {' + html.slice(start, end) + '})()', {
+    window: { top, spMeta: { checkout() { f.w.spMeta.checkout(); sequence.push(['event']); } },
+      spUrlWith(base, params) { const url = new URL(base + '?utm_campaign=spot_test&fbclid=test-click'); Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value)); return url.href; } },
+    CHECKOUT: 'https://secure.spot.officialprogram.online/', vars: { nome: 'Test Visitor' }, currentBalance: 438.77, balanceVal: '438.77', step() {},
+  });
+  assert.deepEqual(sequence.map(item => item[0]), ['event', 'redirect']);
+  assert.equal(f.calls().filter(c => c[0] === 'track' && c[1] === 'InitiateCheckout').length, 1);
+  const destination = new URL(sequence[1][1]);
+  assert.equal(destination.searchParams.get('utm_campaign'), 'spot_test');
+  assert.equal(destination.searchParams.get('fbclid'), 'test-click');
+  assert.equal(destination.searchParams.get('balance'), '438.77');
+});
