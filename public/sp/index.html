@@ -6,20 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Spotify - SoundRate Evaluator</title>
   <link rel="icon" type="image/png" href="/favicon.png">
-  <!-- Meta Pixel -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1420189650232210');
-    (function(){try{var k='fb_pv_'+location.pathname;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var n=0;var t=setInterval(function(){n++;if(window.fbq&&fbq.loaded){clearInterval(t);fbq('track','PageView');}else if(n>80){clearInterval(t);if(window.fbq)fbq('track','PageView');}},250);}catch(e){if(window.fbq)fbq('track','PageView');}})();
-  </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1420189650232210&ev=PageView&noscript=1" /></noscript>
+  <script src="/sp/meta-pixel.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -1158,7 +1145,7 @@
     (function () {
       try {
         var KEY = 'sp_attr_params';
-        var curParams = new URLSearchParams(window.location.search || '');
+        var curParams = new URLSearchParams((window.spTrackingSearch || window.location.search) || '');
         var paramsObj = {};
         curParams.forEach(function (v, k) { if (v) paramsObj[k] = v; });
         if (Object.keys(paramsObj).length > 0) {
@@ -1176,7 +1163,7 @@
     // ══════════════════════════════════════════════════
     // CONFIGURAÇÃO — mude aqui o link padrão ou envie via parâmetro na URL (?dest=type ou ?redirect=slug)
     // ══════════════════════════════════════════════════
-    var urlParams = new URLSearchParams(window.location.search);
+    var urlParams = new URLSearchParams((window.spTrackingSearch || window.location.search));
     var customDest = urlParams.get('dest') || urlParams.get('redirect');
     if (customDest) {
       localStorage.setItem('sp_redirect_dest', customDest);
@@ -1189,7 +1176,7 @@
         var split = base.split('?');
         var path = split[0];
         var qs = new URLSearchParams(split[1] || '');
-        var curParams = new URLSearchParams(window.location.search || '');
+        var curParams = new URLSearchParams((window.spTrackingSearch || window.location.search) || '');
         curParams.forEach(function (val, key) {
           qs.set(key, val);
         });

