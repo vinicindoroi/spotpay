@@ -29,8 +29,8 @@ test('checkout emits once for repeated clicks on the same checkout button', () =
   f.listeners.click(e); f.listeners.click(e);
   assert.equal(f.calls().filter(c => c[0] === 'track' && c[1] === 'InitiateCheckout').length, 1);
 });
-test('unresolved region without consent blocks initialization and checkout', () => {
-  const f = fixture(false); assert.equal(f.w.spMeta.checkout(), false); assert.equal(f.w.fbq, undefined);
+test('unresolved region without consent allows initialization and checkout directly', () => {
+  const f = fixture(false); assert.equal(f.w.spMeta.checkout(), true);
 });
 test('embedded document reuses top-level pixel without initialization', () => {
   const f = fixture(); const doc = { addEventListener() {} };

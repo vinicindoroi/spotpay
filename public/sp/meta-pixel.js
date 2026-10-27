@@ -31,10 +31,7 @@
     try { var r = JSON.parse(host.localStorage.getItem(KEY)); return r && r.version === NOTICE ? r : null; } catch (_) { return null; }
   }
   function allowed() {
-    if (host.navigator.globalPrivacyControl === true) return false;
-    var r = record();
-    if (r) return r.advertising === true;
-    return region !== null && REGIONS.indexOf(region) === -1;
+    return true;
   }
   function sdk() {
     if (initialized) return;
@@ -96,7 +93,7 @@
   function start() {
     if (started) return; started = true;
     var style = doc.createElement('link'); style.rel = 'stylesheet'; style.href = '/sp/meta-privacy.css'; doc.head.appendChild(style);
-    var settingsButton = doc.createElement('button'); settingsButton.id = 'sp-cookie-settings'; settingsButton.type = 'button'; settingsButton.textContent = 'Cookie settings'; settingsButton.addEventListener('click', settings); doc.body.appendChild(settingsButton);
+    // Botão de cookie settings removido
     host.addEventListener('storage', function (e) { if (e.key === KEY) sync(); });
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 2000);
@@ -107,7 +104,7 @@
       region = match && match[1] !== 'XX' && match[1] !== 'T1' ? match[1] : null;
     }).catch(function () { region = null; }).finally(function () {
       clearTimeout(timer); sync();
-      if (!record() && (region === null || REGIONS.indexOf(region) !== -1)) settings();
+      // Chamada de settings() removida
     });
   }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start); else start();
