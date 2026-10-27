@@ -587,6 +587,14 @@
 
       try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), p: all })); } catch (e) {}
 
+      try {
+        var existingVid = all.visit_id || all.vid || localStorage.getItem('sp_visit_id');
+        if (!existingVid) {
+          existingVid = 'vis_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
+        }
+        all.visit_id = existingVid;
+        localStorage.setItem('sp_visit_id', existingVid);
+      } catch (e) {}
       window.spParams = all;
       window.spUrlWith = function (base, extra) {
         var merged = {};
@@ -991,6 +999,7 @@
           nome: vars.nome || '',
           spot: '1',
           ref: 'chat',
+          visit_id: (window.spParams && window.spParams.visit_id) || localStorage.getItem('sp_visit_id') || '',
           balance: (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2)
         });
         try { if (window.spMeta) window.spMeta.checkout(); } catch (e) {}
