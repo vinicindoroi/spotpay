@@ -19,15 +19,15 @@ const CONFIG = {
   MODO: "AUTOMATICO",
 
   // Destinos das Páginas
-  WHITEPAGE_URL: "https://program.official-partner.online/w/index.html",
-  OFERTA_URL: "https://program.official-partner.online/sp/type/index.html",
+  WHITEPAGE_URL: "https://seusite.com/white",
+  OFERTA_URL: "https://seusite.com/oferta",
 
   // 1. Filtro Geográfico (ISO 2 letras dos países permitidos para a oferta)
   // Deixe vazio [] para aceitar todos, ou ["BR"] para focar apenas no Brasil
   PAISES_PERMITIDOS: ["BR"],
 
-  // 2. Filtro de Plataforma (Meta / Facebook Ads)
-  PARAMETRO_UTM: "spot",
+  // 2. Filtro de Parâmetro da Campanha (Deixe vazio "" se não quiser exigir palavra-chave)
+  PARAMETRO_UTM: "",
   EXIGIR_FBCLID: false, // se true, só libera humanos com fbclid presente
 
   // 3. Filtro de Dispositivos Permitidos
@@ -180,7 +180,7 @@ export default {
       ""
     ).toLowerCase();
 
-    const hasValidUtm = campaign.includes(CONFIG.PARAMETRO_UTM.toLowerCase());
+    const hasValidUtm = !CONFIG.PARAMETRO_UTM || campaign.includes(CONFIG.PARAMETRO_UTM.toLowerCase());
     const hasFbclid = Boolean(url.searchParams.get("fbclid"));
     const failsPlatformToken = !hasValidUtm || (CONFIG.EXIGIR_FBCLID && !hasFbclid);
 
